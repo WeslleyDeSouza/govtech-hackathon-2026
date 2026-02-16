@@ -46,7 +46,7 @@ In consultation with the event organizing team, well founded exceptions to these
 ## Checklist for a successful challenge
 
 * Accessibility of “own” resources: Are the data, APIs, etc. technically and “legally” (terms of use, NDA, etc.) accessible to the participants (at least) during the Hackathon in order to successfully complete the challenge? Consider accessing websites/services from outside and within (blacklist) the administration. If possible, link the available data sources on your respective project page on our hack platform. 
-* Accessibility of third-party resources: Are the data, APIs, etc. of third parties that you need to tackle the challenge accessible within the Hackathon? We recommend that you make the appropriate assessment in advance of the Hackathon and, if necessary, get in touch with the data owners. If possible, link the available data sources on your respective project page on our hack platform. We are happy to provide support (info[at]opendata.ch). 
+* Accessibility of third-party resources: Are the data, APIs, etc. of third parties that you need to tackle the challenge accessible within the Hackathon? We recommend that you make the appropriate assessment in advance of the Hackathon and, if necessary, get in touch with the data owners. If possible, link the available data sources on your respective project page on our hack platform. We are happy to provide support (hackathon-bk[at]bfh.ch).
 * Scope: Is the challenge doable in the (short) time? Have I set the right focus: core of the problem, “creative” approaches, prototyping instead of “execution work”?
     Repository and communication: Propose a repository and communication channel for the team (e.g. both on Git(Hub)).
     Challenge Owner Presence: Ideally, the challenge owner (or a proxy) is on-site during the whole Hackathon and accompanies the team (occasional calls or similar are of course no problem). If this is not possible, he/she or the proxy must at least present the Challenge on-site and be available afterward on-site or by phone (give them your number) for questions about the challenge or the resources.
@@ -75,8 +75,9 @@ dribdat (originally from “Driven By Data”) is an open source (MIT licensed) 
 
 Learn how to use dribdat here: https://dribdat.cc/usage.
 
-If you want to host a Hackathon, you can also self-host dribdat. If you need support with setting up, please contact info[at]opendata.ch.
-How do you work on our platform? Dribdat 1×1
+If you want to host a Hackathon, you can also self-host dribdat. If you need support with setting up, please contact oleg[at]alets.ch
+
+## How do you work on our platform? Dribdat 1×1
 
 * Login and join project (Join)
 * Document progress, upload data and screenshots (Post)
