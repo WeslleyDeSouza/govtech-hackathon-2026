@@ -1,9 +1,80 @@
 # Hackathon Handbook
 
-...
+## What is a GovTech Hackathon?
 
-## What makes for a (good) Challenge?
+> **_Our hackathons turn discussion into action — by bringing the right people to the table and transforming ideas into prototypes within             days, not months._**
 
+At a GovTech Hackathon, developers, experts, and enthusiasts from the administration, business, and civil society come together to share, improve, and use government data to create an impact. Together, we collaborate to strengthen Switzerland’s digital foundation.
+
+Over the course of two days, interdisciplinary teams develop prototypes and concepts that demonstrate how data can have an impact in practice —for example through data-driven decision-making, personalized services, or the use of AI to automate processes.
+
+## What are the opportunities of a Hackathon?
+* explore new approaches to solving challenges facing your organization
+* foster innovation, collaboration (break up silos!) and a culture of openness within and across organizations
+* foster (open) data publication and usage and join the journey to openness
+* test and draw potential from a dataset and improve its quality
+* get insights into innovations, innovation processes and current challenges of a sector
+* network with dedicated people from a given sector and beyond
+* strengthen and stimulate your team
+* improve the visibility of your organization to potential collaborators and scout potential employees
+
+## What are the elements of a Hackathon? 
+
+For our Hackathons to be successful, we consider these elements to be essential:
+
+* **Challenges**: a set of comprehensive descriptions of current issues, of what we want to build, improve or repair.
+* **People**: those who are involved daily with challenges, and those who are willing to (help) solve them. Public administration, programmers, designers, activists, politicians, journalists and other interested parties are all invited to participate.
+* **Technology**: The available data, information, technology related to a challenge, together with known requirements of the solution(s) (e.g. accessibility, security), as well as tools through which available resources are combined together to make use of new information, and to transform raw ideas into neatly designed concepts that respond to a challenge.
+
+## How do our Hackathons work?
+Our Hackathons usually follow these steps:
+
+**Day 1** 
+* Intro
+* Challenge presentations
+* Team building
+* Hacking
+* Check-out
+
+**Day 2** 
+* Coffee
+* Hacking
+* Project presentations
+* Conclusions (Apéro)
+
+A Hackathon can be preceded by one or multiple pre-events/workshops where the (potential) participants, challenge owners and other stakeholders are introduced to the concept of Hackathons (including Q&A) and/or create or refine Challenges for the Hackathon (usually with a Human Centered Design methodology). Our Hackathons usually start with opening remarks and important information on the program, venue, food, wifi, dribdat etc. Afterward, the challenge owners pitch their challenges to the participants in 2 – 5 minutes each (not more than 1 hour in total). After the last challenge presentation the participants can decide on which challenge they want to work on by seeking and talking to the challenge owners who are distributed in the room. The organizing team facilitates the team-building process. However, this often happens quite organically. As soon as a team is complete – we recommend 3 to max. 8 people – they can start working. Usually, there’s only one team tackling a specific challenge. At our Hackathons, collaboration trumps competition. Ideally, the challenge owner accompanies the team (but doesn’t lead it) during the Hackathon. The teams self-organize and independently work on their challenge during the two days. They can be supported by mentors. The first day is concluded by a check-out where the teams report learnings and failures back to the whole group. On the second day, the teams can finish and document their projects and prepare for the final pitches. These can be public and/or live-streamed, usually have a short Q&A and are usually followed by a reception. The event usually ends with an informal get-together of the participants where they can exchange ideas and ask each other further questions.
+
+We want everyone to feel safe during a Hackathon. That’s why all attendees, sponsors, partners, volunteers and staff at our Hackathon are required to agree with the [Hack Code of Conduct]([url](https://hackcodeofconduct.org/)). We will enforce this code throughout the event.
+
+## Why should you attend our Hackathons?
+
+We want to bring people together who can actively tackle challenges. There’s a very common misconception that Hackathons are only for hackers, for techies, developers, nerds or in general for people with a big technical know-how.
+
+While such profiles are important to tackle challenges and build solutions quickly, we need more than that: We need people bringing domain knowledge, we need people sharing their challenges, we need people with a problem-solving attitude and willing to learn.
+
+Having relevant stakeholders like users and providers present helps tackle the challenge. Don’t hesitate inviting them or let us know should you need any support.
+
+At the beginning of the Hackathon these talents will be combined in different projects and will work together in teams, to create, test and improve prototypes. It shows time and again: a good toolbox, high diversity and a hard deadline are an excellent innovation recipe.
+
+## What role can you have at a Hackathon?
+
+At our Hackathons there are different roles. One person can have multiple roles/hats.
+
+**Challenge Owner**
+
+Formulate and share a challenge. Pitch your challenge during the Hackathon’s launch. At the beginning, stay with the project teams who decided to tackle the challenges you formulated. Be available to answer possible follow-up questions. Support communications internally (it is great if employees take part!) and externally via your own communication and professional networks.
+
+**Participant**
+
+Help solving one or more challenges. Let us know your specialties (design or tech expertise, domain knowledge, other skills), and what role and learning opportunities you seek. Important: Tech-expertise (e.g. API, Data Science) is welcome, but not a prerequisite.
+
+**(Tech) mentor**
+
+Share your (tech-)expertise and support multiple teams. We will get in touch to explain how to mentor during this Hackathon. Tech-expertise in such fields is welcome: API, data analysis, web,…
+
+When attending our Hackathons, every participant will be able to pick a challenge. This information, together with some more information about their particular skill, experience of each participant, will help the organising team before and during the teambuilding phase, that is putting together effective and thriving project groups, maximizing the appeal and fun-factor of the Hackathon.
+
+## What makes for a (good) challenge?
 
 We want to work on real problems and ideas. These should be formulated as “Challenges”. Challenges stand at the core of our Hackathons. They are like sparks that ignite projects. Challenges can be of different types and put a range of deliverables in focus:
 
@@ -45,13 +116,13 @@ In consultation with the event organizing team, well founded exceptions to these
 
 ## Checklist for a successful challenge
 
-* Accessibility of “own” resources: Are the data, APIs, etc. technically and “legally” (terms of use, NDA, etc.) accessible to the participants (at least) during the Hackathon in order to successfully complete the challenge? Consider accessing websites/services from outside and within (blacklist) the administration. If possible, link the available data sources on your respective project page on our hack platform. 
-* Accessibility of third-party resources: Are the data, APIs, etc. of third parties that you need to tackle the challenge accessible within the Hackathon? We recommend that you make the appropriate assessment in advance of the Hackathon and, if necessary, get in touch with the data owners. If possible, link the available data sources on your respective project page on our hack platform. We are happy to provide support (hackathon-bk[at]bfh.ch).
-* Scope: Is the challenge doable in the (short) time? Have I set the right focus: core of the problem, “creative” approaches, prototyping instead of “execution work”?
+* **Accessibility of “own” resources**: Are the data, APIs, etc. technically and “legally” (terms of use, NDA, etc.) accessible to the participants (at least) during the Hackathon in order to successfully complete the challenge? Consider accessing websites/services from outside and within (blacklist) the administration. If possible, link the available data sources on your respective project page on our hack platform. 
+* **Accessibility of third-party resources**: Are the data, APIs, etc. of third parties that you need to tackle the challenge accessible within the Hackathon? We recommend that you make the appropriate assessment in advance of the Hackathon and, if necessary, get in touch with the data owners. If possible, link the available data sources on your respective project page on our hack platform. We are happy to provide support (hackathon-bk[at]bfh.ch).
+* **Scope**: Is the challenge doable in the (short) time? Have I set the right focus: core of the problem, “creative” approaches, prototyping instead of “execution work”?
     Repository and communication: Propose a repository and communication channel for the team (e.g. both on Git(Hub)).
     Challenge Owner Presence: Ideally, the challenge owner (or a proxy) is on-site during the whole Hackathon and accompanies the team (occasional calls or similar are of course no problem). If this is not possible, he/she or the proxy must at least present the Challenge on-site and be available afterward on-site or by phone (give them your number) for questions about the challenge or the resources.
-* Sustainability: What happens to the results after the Hackathon? How do we integrate the results of the project into our organization and what constraints are there that the team has to take into account during the Hackathon to enable this? Do we have (financial and human) resources to internally support the project? (How) can we involve the participants beyond the Hackathon? This will also motivate the participants to choose your challenge. 
-* Expectation management: It’s possible that your challenge will not be picked by a team. In that specific case, as frustrating as it might be, we still encourage you to stay at the Hackathon and work with (or mentor) other teams, for the insights about innovation and for the networking, but also because oftentimes, if you are actively involved, two rather similar challenges can turn in one project with synergies. And if not, we can tackle it next time!
+* **Sustainability**: What happens to the results after the Hackathon? How do we integrate the results of the project into our organization and what constraints are there that the team has to take into account during the Hackathon to enable this? Do we have (financial and human) resources to internally support the project? (How) can we involve the participants beyond the Hackathon? This will also motivate the participants to choose your challenge. 
+* **Expectation management**: It’s possible that your challenge will not be picked by a team. In that specific case, as frustrating as it might be, we still encourage you to stay at the Hackathon and work with (or mentor) other teams, for the insights about innovation and for the networking, but also because oftentimes, if you are actively involved, two rather similar challenges can turn in one project with synergies. And if not, we can tackle it next time!
 
 ## How to present a challenge to the participants?
 
