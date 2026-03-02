@@ -10,6 +10,28 @@ Mobility? Finance? Climate? Do you have an idea or a challenge related to govern
 
 Over the course of two days, you will develop prototypes and concepts that demonstrate how data can have an impact in practice – for example, through data-driven decision-making, personalized services, or the use of AI to automate processes.
 
+## Programm
+
+
+| **Thursday** |          |                          |
+|--------------|----------|--------------------------|
+|              | 08:00    | Check-in                 |
+|              | 09:00    | Welcome                  |
+|              | 09:30    | Pitches                  |
+|              | 11:00    | Team Building            |
+|              | 11:30    | Lunch                    |
+|              | 13:30    | Hacken                   |
+|              | 18:00    | Drinks and Sandwiches    |
+|              | Open End | Hacken                   |
+| **Friday**   |          |                          |
+|              | 07:30    | Check-in & Hacken        |
+|              | 10:00    | Mentoring (optional)     |
+|              | 11:30    | Lunch Break              |
+|              | 16:00    | Final Presentations      |
+|              | 17:15    | Apéro                    |
+|              | 17:15    | Award Ceremony           |
+
+
 ## Location
 
 [Federal Office of Information Technology, Systems and Telecommunication (FOITT), Eichenweg 3, CH-3052 Zollikofen](https://www.openstreetmap.org/node/12779830239#map=19/46.997538/7.462926)
