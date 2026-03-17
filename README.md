@@ -20,11 +20,11 @@ Over the course of two days, you will develop prototypes and concepts that demon
 |              | 09:30    | Pitches                  |
 |              | 11:00    | Team Building            |
 |              | 11:30    | Lunch                    |
-|              | 13:30    | Hacken                   |
+|              | 13:30    | Hacking                   |
 |              | 18:00    | Drinks and Sandwiches    |
 |              | Open End | Hacking                  |
 | **Friday**   |          |                          |
-|              | 07:30    | Check-in & Hacken        |
+|              | 07:30    | Check-in & Hacking        |
 |              | 10:00    | Mentoring (optional)     |
 |              | 11:30    | Lunch Break              |
 |              | 16:00    | Final Presentations      |
