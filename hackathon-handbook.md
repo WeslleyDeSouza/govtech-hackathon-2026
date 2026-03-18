@@ -124,7 +124,7 @@ In consultation with the event organizing team, well founded exceptions to these
 * **Accessibility of third-party resources**: Are the data, APIs, etc. of third parties that you need to tackle the challenge accessible within the hackathon? We recommend that you make the appropriate assessment in advance of the hackathon and, if necessary, get in touch with the data owners. If possible, link the available data sources on your respective project page on our hack platform. We are happy to provide support (hackathon-bk[at]bfh.ch).
 * **Scope**: Is the challenge doable in the (short) time? Have I set the right focus: core of the problem, “creative” approaches, prototyping instead of “execution work”?
 * **Repository and communication**: Propose a repository (and communication channel) for the team (e.g. both on Git(Hub/Lab)).
-* **Challenge Owner Presence**: The challenge owner (or a proxy) is on-site during the whole hackathon and accompanies the team (occasional calls or similar are of course no problem). If this is not possible, he/she or the proxy must at least present the Challenge on-site and be available afterward on-site or by phone (give them your number) for questions about the challenge or the resources.
+* **Challenge Owner Presence**: The challenge owner (or a proxy) is on-site during the whole hackathon and accompanies the team (occasional calls or similar are of course no problem). If this is not possible, they or the proxy must at least present the challenge on-site and be available afterward on-site or by phone (give them your number) for questions about the challenge or the resources.
 * **Sustainability**: What happens to the results after the hackathon? How do we integrate the results of the project into our organization and what constraints are there that the team has to take into account during the hackathon to enable this? Do we have (financial and human) resources to internally support the project? (How) can we involve the participants beyond the hackathon? This will also motivate the participants to choose your challenge. 
 * **Expectation management**: It’s possible that your challenge will not be picked by a team. In that specific case, as frustrating as it might be, we still encourage you to stay at the hackathon and work with (or mentor) other teams, for the insights about innovation and for the networking, but also because oftentimes, if you are actively involved, two rather similar challenges can turn in one project with synergies. And if not, we can tackle it next time!
 
@@ -132,17 +132,17 @@ In consultation with the event organizing team, well founded exceptions to these
 
 Upload your slides to dribdat and and use the platform as a visual support. For the challenge pitch, we suggest the following structure:
 
-* Title
-* Organization
-* What is the need or problem? For whom?
-* What resources are (not) available (input)?
+* **Title**
+* **Organization**
+* **What is the need or problem? For whom?**
+* **What resources are (not) available (input)?**
 * What would be different if the problem was solved?
-* What is your goal for the hackathon?
+* **What is your goal for the hackathon?**
 * What are the approaches to solving the problem? Which ones have you already tried?
 * What are the limitations? What do you have to pay attention to?
-* What happens with the results of the hackathon?
-* Contact details
-* Competencies: Which ones are already present in the team? Which ones do you still need or who are you looking for?
+* **What happens with the results of the hackathon?**
+* **Contact details**
+* **Competencies: Which ones are already present in the team? Which ones do you still need or who are you looking for?**
 
 ## Which platform do we run our Hackathons on?
 
