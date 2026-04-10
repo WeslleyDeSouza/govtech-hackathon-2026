@@ -22,7 +22,7 @@ Over the course of two days, you will develop prototypes and concepts that demon
 |              | 11:30    | Lunch                    |
 |              | 13:30    | Hacking                   |
 |              | 18:00    | Drinks and Sandwiches    |
-|              | Open End | Hacking                  |
+|              | 22:00    | End                      |
 | **Friday**   |          |                          |
 |              | 07:30    | Check-in & Hacking        |
 |              | 10:00    | Mentoring (optional)     |
