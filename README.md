@@ -21,6 +21,7 @@ Over the course of two days, you will develop prototypes and concepts that demon
 |              | 11:00    | Team Building            |
 |              | 11:30    | Lunch                    |
 |              | 13:30    | Hacking                   |
+|              | 15:00    | Mentoring (optional)     |
 |              | 18:00    | Drinks and Sandwiches    |
 |              | 22:00    | End                      |
 | **Friday**   |          |                          |
