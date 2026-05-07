@@ -30,7 +30,7 @@ Over the course of two days, you will develop prototypes and concepts that demon
 |              | 16:00    | Final Presentations      |
 |              | 17:15    | Apéro                    |
 |              | 17:45    | Award Ceremony           |
-
+|              | 19:00    | End                      |
 
 ## Location
 
