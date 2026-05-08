@@ -13,8 +13,6 @@ Over the course of two days, you will develop prototypes and concepts that demon
 ## Programm
 
 
-| **Thursday** |          |                          |
-
 ## Donnerstag, 28. Mai
 
 | Zeit | Programmpunkt | Ort |
