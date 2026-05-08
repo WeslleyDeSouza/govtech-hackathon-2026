@@ -16,10 +16,13 @@ Over the course of two days, you will develop prototypes and concepts that demon
 | **Thursday** |          |                          |
 
 ## Donnerstag, 28. Mai
+
+| Zeit | Programmpunkt | Ort |
+| --- | --- | --- |
 | 08:00 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
 | 09:00 | Offizieller Start | Conference Hall |
-| 09:00 | Begrüssung Alexander Barcla, Nina Gammenthaler | Conference Hall |
-| 09:00 | Begrüssung BIT Dirk Lindemann | Conference Hall |
+| 09:00 | Begrüssung BK<br>Alexander Barclay<br>Nina Gammenthaler | Conference Hall |
+| 09:00 | Begrüssung BIT<br>Dirk Lindemann | Conference Hall |
 | 09:15 | Allgemeine Information<br>Jürg Bulling-Wüst, BK<br>Florin Hasler, BFH | Conference Hall |
 | 09:30 | Präsentation der Challenges | Conference Hall |
 | 10:45 | Teambuilding | Conference Hall |
@@ -31,9 +34,10 @@ Over the course of two days, you will develop prototypes and concepts that demon
 | 19:30 | Hacking | 3. Stock, Eichenweg 3 |
 | 22:00 | Ende |  |
 
----
-
 ## Freitag, 29. Mai
+
+| Zeit | Programmpunkt | Ort |
+| --- | --- | --- |
 | 07:30 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
 | 07:30 | Hacking | 3. Stock, Eichenweg 3 |
 | 10:00–10:30 | Mentoring Session optional<br>Rechts Q&A, BK | Conference Hall |
