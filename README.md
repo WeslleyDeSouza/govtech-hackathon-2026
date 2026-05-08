@@ -14,24 +14,35 @@ Over the course of two days, you will develop prototypes and concepts that demon
 
 
 | **Thursday** |          |                          |
-|--------------|----------|--------------------------|
-|              | 08:00    | Check-in                 |
-|              | 09:00    | Welcome                  |
-|              | 09:30    | Pitches                  |
-|              | 11:00    | Team Building            |
-|              | 11:30    | Lunch                    |
-|              | 13:30    | Hacking                   |
-|              | 15:00    | Mentoring (optional)     |
-|              | 18:00    | Drinks and Sandwiches    |
-|              | 22:00    | End                      |
-| **Friday**   |          |                          |
-|              | 07:30    | Check-in & Hacking        |
-|              | 10:00    | Mentoring (optional)     |
-|              | 11:30    | Lunch Break              |
-|              | 16:00    | Final Presentations      |
-|              | 17:15    | Apéro                    |
-|              | 17:45    | Award Ceremony           |
-|              | 19:00    | End                      |
+
+## Donnerstag, 28. Mai
+| 08:00 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
+| 09:00 | Offizieller Start | Conference Hall |
+| 09:00 | Begrüssung BK<br>Alexander Barclay<br>Nina Gammenthaler | Conference Hall |
+| 09:00 | Begrüssung BIT<br>Dirk Lindemann | Conference Hall |
+| 09:15 | Allgemeine Information<br>Jürg Bulling-Wüst, BK<br>Florin Hasler, BFH | Conference Hall |
+| 09:30 | Präsentation der Challenges | Conference Hall |
+| 10:45 | Teambuilding | Conference Hall |
+| 11:00 | Start Hacking | 3. Stock, Eichenweg 3 |
+| 11:30–13:00 | Mittagessen | Restaurant Alpine, Eichenweg 1 |
+| Ab 13:00 | Hacking | 3. Stock, Eichenweg 3 |
+| 15:00–16:30 | Mentoring Sessions optional<br>Human Centered Design, BIT<br>LOMAS, BFS<br>LINDAS, BAR<br>Renku, ETH | Conference Hall |
+| 18:00 | Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
+| 19:30 | Hacking | 3. Stock, Eichenweg 3 |
+| 22:00 | Ende |  |
+
+---
+
+## Freitag, 29. Mai
+| 07:30 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
+| 07:30 | Hacking | 3. Stock, Eichenweg 3 |
+| 10:00–10:30 | Mentoring Session optional<br>Rechts Q&A, BK | Conference Hall |
+| 10:30 | Hacking | 3. Stock, Eichenweg 3 |
+| 11:30–13:00 | Mittagessen | Restaurant Ginko, Eichenweg 3 |
+| 13:00–16:00 | Hacking & Finalisierung der Präsentationen | 3. Stock, Eichenweg 3 |
+| 16:00 | Präsentation der Resultate | Conference Hall |
+| 17:00 | Apéro inkl. Preisverleihung mit<br>Daniel Markwalder, D-DTI<br>Charles JeanRichard, Stv. GS, künftiger GS-EDA<br>Robert Scheidegger, Stv. für GS-VBS<br>Catherine Pugin, État de Vaud<br>Prof. Dr. Liudmila Zavolokina, Assistant Professor in Information Systems & Digital Innovation, UNIL | Restaurant Ginko, Eichenweg 3 |
+| 19:00 | Ende |  |
 
 ## Location
 
