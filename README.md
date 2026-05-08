@@ -43,7 +43,7 @@ Over the course of two days, you will develop prototypes and concepts that demon
 | 11:30–13:00 | Mittagessen | Restaurant Ginko, Eichenweg 3 |
 | 13:00–16:00 | Hacking & Finalisierung der Präsentationen | 3. Stock, Eichenweg 3 |
 | 16:00 | Präsentation der Resultate | Conference Hall |
-| 17:00 | Apéro inkl. Preisverleihung mit<br>Daniel Markwalder, D-DTI<br>Charles JeanRichard, Stv. GS, künftiger GS-EDA<br>Robert Scheidegger, Stv. für GS-VBS<br>Catherine Pugin, État de Vaud<br>Prof. Dr. Liudmila Zavolokina, Assistant Professor in Information Systems & Digital Innovation, UNIL | Restaurant Ginko, Eichenweg 3 |
+| 17:00 | Apéro inkl. Preisverleihung mit<br>Daniel Markwalder, D-DTI<br>Charles JeanRichard, Stv. GS, künftiger GS-EDA<br>Robert Scheidegger, Stv. GS-VBS<br>Catherine Pugin, État de Vaud<br>Prof. Dr. Liudmila Zavolokina, Assistant Professor in Information Systems & Digital Innovation, UNIL | Restaurant Ginko, Eichenweg 3 |
 | 19:00 | Ende |  |
 
 ## Location
