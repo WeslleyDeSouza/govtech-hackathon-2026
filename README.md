@@ -18,8 +18,8 @@ Over the course of two days, you will develop prototypes and concepts that demon
 ## Donnerstag, 28. Mai
 | 08:00 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
 | 09:00 | Offizieller Start | Conference Hall |
-| 09:00 | Begrüssung BK<br>Alexander Barclay<br>Nina Gammenthaler | Conference Hall |
-| 09:00 | Begrüssung BIT<br>Dirk Lindemann | Conference Hall |
+| 09:00 | Begrüssung Alexander Barcla, Nina Gammenthaler | Conference Hall |
+| 09:00 | Begrüssung BIT Dirk Lindemann | Conference Hall |
 | 09:15 | Allgemeine Information<br>Jürg Bulling-Wüst, BK<br>Florin Hasler, BFH | Conference Hall |
 | 09:30 | Präsentation der Challenges | Conference Hall |
 | 10:45 | Teambuilding | Conference Hall |
