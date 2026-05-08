@@ -27,11 +27,11 @@ Over the course of two days, you will develop prototypes and concepts that demon
 | 11:00 | Start Hacking | 3. Stock, Eichenweg 3 |
 | 11:30–13:00 | Mittagessen | Restaurant Alpine, Eichenweg 1 |
 | Ab 13:00 | Hacking | 3. Stock, Eichenweg 3 |
-| 15:00–16:30 | Mentoring Sessions optional<br>Human Centered Design, BIT<br>LOMAS, BFS<br>LINDAS, BAR<br>Renku, ETH | Conference Hall |
+| 15:00–16:30 | Mentoring Sessions optional<br>Human Centered Design, BIT<br>LINDAS, BAR<br>Renku, ETH <br> LOMAS, BFS | Conference Hall |
 | 18:00 | Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
 | 19:30 | Hacking | 3. Stock, Eichenweg 3 |
 | 22:00 | Ende |  |
-
+<
 ## Freitag, 29. Mai
 
 | Zeit | Programmpunkt | Ort |
