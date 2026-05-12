@@ -29,7 +29,7 @@ Over the course of two days, you will develop prototypes using government data. 
 | 18:00 | Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
 | 19:30 | Hacking | 3. Stock, Eichenweg 3 |
 | 22:00 | Ende |  |
-<
+
 ## Freitag, 29. Mai
 
 | Zeit | Programmpunkt | Ort |
