@@ -16,19 +16,16 @@ Over the course of two days, you will develop prototypes using government data. 
 | Zeit | Programmpunkt | Ort |
 | --- | --- | --- |
 | 08:00 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
-| 09:00 | Offizieller Start | Conference Hall |
-| 09:00 | Begrüssung BK<br>Alexander Barclay<br>Nina Gammenthaler | Conference Hall |
-| 09:00 | Begrüssung BIT<br>Dirk Lindemann | Conference Hall |
-| 09:15 | Allgemeine Information<br>Jürg Bulling-Wüst, BK<br>Florin Hasler, BFH | Conference Hall |
+| 09:00 | Start und Begrüssung | Conference Hall |
 | 09:30 | Präsentation der Challenges | Conference Hall |
 | 10:45 | Teambuilding | Conference Hall |
 | 11:00 | Start Hacking | 3. Stock, Eichenweg 3 |
 | 11:30–13:00 | Mittagessen | Restaurant Alpine, Eichenweg 1 |
 | Ab 13:00 | Hacking | 3. Stock, Eichenweg 3 |
-| 15:00–16:00 | Mentoring Sessions optional<br>Human Centered Design, BIT<br>LINDAS, BAR<br>Renku, ETH <br> LOMAS, BFS | Conference Hall |
+| 15:00–16:00 | Mentoring Sessions (optional)<br>Human Centered Design, BIT<br>LINDAS, BAR<br>Renku, SDSC <br> LOMAS, BFS | Conference Hall |
 | 18:00 | Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
 | 19:30 | Hacking | 3. Stock, Eichenweg 3 |
-| 22:00 | Ende |  |
+| 22:00 | Ende, Tür schliesst |  |
 
 ## Freitag, 29. Mai
 
@@ -36,12 +33,12 @@ Over the course of two days, you will develop prototypes using government data. 
 | --- | --- | --- |
 | 07:30 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
 | 07:30 | Hacking | 3. Stock, Eichenweg 3 |
-| 10:00–10:30 | Mentoring Session optional<br>Rechts Q&A, BK | Conference Hall |
+| 10:00–10:30 | Mentoring Session (optional)<br>Rechts Q&A, BK | Conference Hall |
 | 10:30 | Hacking | 3. Stock, Eichenweg 3 |
 | 11:30–13:00 | Mittagessen | Restaurant Ginko, Eichenweg 3 |
 | 13:00–16:00 | Hacking & Finalisierung der Präsentationen | 3. Stock, Eichenweg 3 |
 | 16:00 | Präsentation der Resultate | Conference Hall |
-| 17:00 | Apéro inkl. Preisverleihung mit<br>Daniel Markwalder, D-DTI<br>Charles JeanRichard, Stv. GS, künftiger GS-EDA<br>Robert Scheidegger, Stv. GS-VBS<br>Catherine Pugin, État de Vaud<br>Prof. Dr. Liudmila Zavolokina, Assistant Professor in Information Systems & Digital Innovation, UNIL | Restaurant Ginko, Eichenweg 3 |
+| 17:00 | Apéro inkl. Preisverleihung | Restaurant Ginko, Eichenweg 3 |
 | 19:00 | Ende |  |
 
 ## Location
