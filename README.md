@@ -1,6 +1,6 @@
 # GovTech Hackathon 2026
 
-* Schedule and Programme below *
+**Schedule and Programme below**
 
 At the [GovTech Hackathon 2026](https://www.bk.admin.ch/bk/de/home/digitale-transformation-ikt-lenkung/bundesarchitektur/api-architektur-bund/govtech-hackathon26.html) (May 28/29 in Bern), we will share, improve, and use government data to create an impact. Meet developers, experts and enthusiasts from the administration, businesses and civil society, and work together on Switzerland's digital foundation. 
 
