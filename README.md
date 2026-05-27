@@ -25,7 +25,7 @@ Over the course of two days, you will develop prototypes using government data. 
 | 11:30–13:00 | Mittagessen | Restaurant Alpine, Eichenweg 1 |
 | Ab 13:00 | Hacking | 3. Stock, Eichenweg 3 |
 | 15:00–16:00 | Mentoring Sessions (optional)<br>Human Centered Design, BIT<br>LINDAS, BAR<br>Renku, SDSC <br> LOMAS, BFS | Conference Hall |
-| 18:00 | Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
+| 18:00 | Checkout, Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
 | 19:30 | Hacking | 3. Stock, Eichenweg 3 |
 | 22:00 | Ende, Tür schliesst |  |
 
