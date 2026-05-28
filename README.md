@@ -10,38 +10,38 @@ Over the course of two days, you will develop prototypes using government data. 
 
 <img width="1280" height="960" alt="Key Visual GovTech Hackathon with Text: GovTech Hackathon, 28. und 29. Mai 2026, Zollikofen (BE); Logo Federal Chancellery" src="https://github.com/user-attachments/assets/a5f92c8b-507c-4db6-ab82-1a75800fc219" />
 
-## Programm
+## Programme
 
 
-## Donnerstag, 28. Mai
+## Thursday, 28. May
 
-| Zeit | Programmpunkt | Ort |
+| Time | What | Place |
 | --- | --- | --- |
 | 08:00 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
 | 09:00 | Start und Begrüssung | Conference Hall |
 | 09:30 | Präsentation der Challenges | Conference Hall |
 | 10:45 | Teambuilding | Conference Hall |
 | 11:00 | Start Hacking | 3. Stock, Eichenweg 3 |
-| 11:30–13:00 | Mittagessen | Restaurant Alpine, Eichenweg 1 |
+| 11:30–13:00 | Lunch (Menu 1 and Menu 2 are free - Menu 3 (high end) not free)| Restaurant Alpine, Eichenweg 1 |
 | Ab 13:00 | Hacking | 3. Stock, Eichenweg 3 |
-| 15:00–16:00 | Mentoring Sessions (optional)<br>Human Centered Design, BIT<br>LINDAS, BAR<br>Renku, SDSC <br> LOMAS, BFS | Conference Hall |
-| 18:00 | Checkout, Snack- und Getränkestation im Freeflow | 3. Stock, Eichenweg 3 |
-| 19:30 | Hacking | 3. Stock, Eichenweg 3 |
-| 22:00 | Ende, Tür schliesst |  |
+| 15:00–16:00 | Mentoring Sessions (optional)<br>Renku, SDSC (15:00-15:15)<br>Human Centered Design, BIT (15:15-15:30)<br>LINDAS, BAR (15:30-15:45)<br>LOMAS, BFS (15:45-16:00)| Conference Hall |
+| 18:00 | Checkout, snacks and drinks (Freeflow) | 3. Floor, Eichenweg 3 |
+| 19:30 | Hacking | 3. Floor, Eichenweg 3 |
+| 22:00 | End, Doors closed |  |
 
-## Freitag, 29. Mai
+## Friday, 29. May
 
-| Zeit | Programmpunkt | Ort |
+| Time | What | Place |
 | --- | --- | --- |
-| 07:30 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
-| 07:30 | Hacking | 3. Stock, Eichenweg 3 |
-| 10:00–10:30 | Mentoring Session (optional)<br>Rechts Q&A, BK | Conference Hall |
-| 10:30 | Hacking | 3. Stock, Eichenweg 3 |
-| 11:30–13:00 | Mittagessen | Restaurant Ginko, Eichenweg 3 |
-| 13:00–16:00 | Hacking & Finalisierung der Präsentationen | 3. Stock, Eichenweg 3 |
-| 16:00 | Präsentation der Resultate | Conference Hall |
-| 17:00 | Apéro inkl. Preisverleihung | Restaurant Ginko, Eichenweg 3 |
-| 19:00 | Ende |  |
+| 07:30 | Check-in participants | Lodge, Eichenweg 3 |
+| 07:30 | Hacking | 3. Floor, Eichenweg 3 |
+| 10:00–10:30 | Mentoring Session (optional)<br>Legal Q&A, BK | Conference Hall |
+| 10:30 | Hacking | 3. Floor, Eichenweg 3 |
+| 11:30–13:00 | Lunch | Restaurant Ginko, Eichenweg 3 |
+| 13:00–16:00 | Hacking & Presentation finalisation | 3. Floor, Eichenweg 3 |
+| 16:00 | Resultats presentation | Conference Hall |
+| 17:00 | Apéro and prize distribution | Restaurant Ginko, Eichenweg 3 |
+| 19:00 | End |  |
 
 ## Location
 
