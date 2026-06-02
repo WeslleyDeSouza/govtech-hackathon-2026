@@ -1,52 +1,103 @@
-# GovTech Hackathon 2026
+# Freddy's Companion / Digital Companion for Unemployment
 
-**Schedule and Programme below**
+**Freddy's Companion** is a GovTech Hackathon 2026 prototype: a plain-language companion that
+guides a person through the Swiss unemployment journey - from the first letter from the RAV
+to the first payout.
 
-At the [GovTech Hackathon 2026](https://www.bk.admin.ch/bk/de/home/digitale-transformation-ikt-lenkung/bundesarchitektur/api-architektur-bund/govtech-hackathon26.html) (May 28/29 in Bern), we will share, improve, and use government data to create an impact. Meet developers, experts and enthusiasts from the administration, businesses and civil society, and work together on Switzerland's digital foundation. 
+> [!NOTE]
+> This is an **MVP built for demo purposes only** — a clickable prototype to illustrate the
+> flow and user experience, not a production-ready application.
 
-## Challenges: Using Data to Make an Impact
+![Banner](Grafik-Hackathon-2026-blau-weisser-hintergrund.png)
 
-Over the course of two days, you will develop prototypes using government data. **Check out the challenges on [govtech.digisus-lab.ch](https://govtech.digisus-lab.ch/event/2)!**
+----
 
-<img width="1280" height="960" alt="Key Visual GovTech Hackathon with Text: GovTech Hackathon, 28. und 29. Mai 2026, Zollikofen (BE); Logo Federal Chancellery" src="https://github.com/user-attachments/assets/a5f92c8b-507c-4db6-ab82-1a75800fc219" />
+### User Story – Onboarding
 
-## Programme
+The linear flow a new user walks through, from launch to a personal plan.
 
+```mermaid
+journey
+  title Onboarding: from first launch to personal plan
+  section Welcome
+    Open app, see splash & trust badge: 0: User
+  section Language
+    Choose UI language (DE/UK/AR/PT/TI/EN): 0: User
+  section Situation
+    Describe situation (lost job / got notice / at risk / other): 0: User
+  section Apply for benefits
+    Pick unemployment fund (Arbeitslosenkasse): 0: User
+  section RAV verification
+    Confirm RAV registration via AGOV login: 0: User
+    Fetch RAV/Job-Room data securely (no re-typing): 0: System
+  section Plan generation
+    Analyse language, situation & deadlines: 0: System
+    Set reminders, build personal plan: 0: System
+  section Home
+    Land on dashboard with next step & timeline: 0: System
+```
 
-## Thursday, 28. May
+----
 
-| Time | What | Place |
-| --- | --- | --- |
-| 08:00 | Check-in Teilnehmende | Lodge, Eichenweg 3 |
-| 09:00 | Start und Begrüssung | Conference Hall |
-| 09:30 | Präsentation der Challenges | Conference Hall |
-| 10:45 | Teambuilding | Conference Hall |
-| 11:00 | Start Hacking | 3. Stock, Eichenweg 3 |
-| 11:30–13:00 | Lunch (Menu 1 and Menu 2 are free - Menu 3 (high end) not free)| Restaurant Alpine, Eichenweg 1 |
-| Ab 13:00 | Hacking | 3. Stock, Eichenweg 3 |
-| 15:00–16:00 | Mentoring Sessions (optional)<br>Renku, SDSC (15:00-15:15)<br>Human Centered Design, BIT (15:15-15:30)<br>LINDAS, BAR (15:30-15:45)<br>LOMAS, BFS (15:45-16:00)| Conference Hall |
-| 18:00 | Checkout, snacks and drinks (Freeflow) | 3. Floor, Eichenweg 3 |
-| 19:30 | Hacking | 3. Floor, Eichenweg 3 |
-| 22:00 | End, Doors closed |  |
+### User Story – Ongoing tasks (Home dashboard)
 
-## Friday, 29. May
+After onboarding the user lives on the Home screen, which separates **one-time** from
+**monthly** obligations and surfaces blockers.
 
-| Time | What | Place |
-| --- | --- | --- |
-| 07:30 | Check-in participants | Lodge, Eichenweg 3 |
-| 07:30 | Hacking | 3. Floor, Eichenweg 3 |
-| 10:00–10:30 | Mentoring Session (optional)<br>Legal Q&A, BK | Conference Hall |
-| 10:30 | Hacking | 3. Floor, Eichenweg 3 |
-| 11:30–13:00 | Lunch | Restaurant Ginko, Eichenweg 3 |
-| 13:00–16:00 | Hacking & Presentation finalisation | 3. Floor, Eichenweg 3 |
-| 16:00 | Resultats presentation | Conference Hall |
-| 17:00 | Apéro and prize distribution | Restaurant Ginko, Eichenweg 3 |
-| 19:00 | End |  |
+```mermaid
+journey
+  title Ongoing: managing the claim from Home
+  section One-time steps
+    RAV registration (done): 0: User
+    AGOV account created (done): 0: User
+    Submit benefit application (Antrag): 0: User
+    Wait for employer certificate (blocked on ex-employer): 0: System
+  section Application (Antrag)
+    View pre-filled application: 0: User
+    Edit via form wizard (Formular 10000d): 0: User
+    Remind ex-employer for the missing part: 0: User
+  section Monthly duties
+    File AVP-Meldung (Angaben der versicherten Person): 0: User
+    Log Arbeitsbemühungen (job-search efforts): 0: User
+  section Support
+    Open emergency / help mode anytime: 0: User
+```
 
-## Location
+----
 
-[Federal Office of Information Technology, Systems and Telecommunication (FOITT), Eichenweg 3, CH-3052 Zollikofen](https://www.openstreetmap.org/node/12779830239#map=19/46.997538/7.462926)
+### Screen flow
 
-## Organizers
+`index.html` is a client-side single-page app: every screen is toggled by `goToView()` and
+the `open*()` helpers. There is no router and no server.
 
-The [DTI division of the Federal Chancellery](https://www.bk.admin.ch/bk/en/home/digitale-transformation-ikt-lenkung.html) is organizing the hackathon with support from the [Institute for Public Sector Transformation](https://www.bfh.ch/en/research/research-areas/public-sector-transformation/) at Bern University of Applied Sciences (BFH)
+```mermaid
+flowchart TD
+  V0["Splash / Welcome"]:::on --> V1["Language select"]:::on
+  V1 --> V3["Situation"]:::on
+  V3 --> V12["Choose Arbeitslosenkasse"]:::on
+  V12 --> V13["RAV verification (AGOV login)"]:::on
+  V13 --> V10["Plan generation (loading)"]:::on
+  V10 --> V11["Home dashboard"]:::home
+
+  %% alternate help paths
+  V3 -.no RAV yet.-> V5["RAV help path"]:::alt
+  V5 --> V6["AGOV status"]:::alt
+  V6 --> V9["Letter scan & explain"]:::alt
+  V9 --> V10
+
+  %% sub-screens reachable from Home
+  V11 --> A["Antrag (view / edit)"]:::sub
+  V11 --> B["Arbeitsbemühungen"]:::sub
+  V11 --> P["AVP-Meldung"]:::sub
+  V11 --> E["Emergency / help sheet"]:::sub
+  A -. "remind employer" .-> AG["Arbeitgeber-Status"]:::wait
+
+  classDef on fill:#EEEDFE,stroke:#534AB7,color:#26215C
+  classDef home fill:#EAF3DE,stroke:#3B6D11,color:#173404
+  classDef alt fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  classDef sub fill:#ffffff,stroke:#888780,color:#2c2c2a
+  classDef wait fill:#FAEEDA,stroke:#BA7517,color:#633806
+```
+
+> Demo persona: **Freddy Fremd**, Personennummer `12345678`, **RAV Bern** — the ex-employer's
+> certificate is overdue, so the application is blocked until it arrives.

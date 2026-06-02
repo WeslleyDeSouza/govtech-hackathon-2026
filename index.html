@@ -1,0 +1,2954 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freddy's Companion v4</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.35.0/dist/tabler-icons.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+            background: #f1efe8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #2c2c2a;
+        }
+        .stage {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            max-width: 1400px;
+            width: 100%;
+        }
+        .sidebar {
+            flex: 1;
+            max-width: 380px;
+            position: sticky;
+            top: 20px;
+        }
+        .sidebar h1 { font-size: 26px; font-weight: 500; margin-bottom: 8px; line-height: 1.2; }
+        .sidebar .tag {
+            display: inline-block; background: #534AB7; color: white;
+            padding: 4px 10px; border-radius: 6px; font-size: 11px;
+            font-weight: 500; letter-spacing: 0.5px; margin-bottom: 16px;
+        }
+        .sidebar p { color: #5F5E5A; line-height: 1.6; margin-bottom: 16px; font-size: 14px; }
+
+        .nav-controls {
+            background: white; padding: 16px; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.15); margin-top: 12px;
+        }
+        .nav-controls h3 { font-size: 11px; font-weight: 500; margin-bottom: 12px; color: #444441; text-transform: uppercase; letter-spacing: 0.5px; }
+        .view-list {
+            max-height: 320px;
+            overflow-y: auto;
+            margin: -4px;
+            padding: 4px;
+        }
+        .view-jump {
+            display: flex; align-items: center; gap: 8px; width: 100%;
+            padding: 7px 10px; margin-bottom: 4px; border: 0.5px solid rgba(0,0,0,0.1);
+            border-radius: 6px; background: white; cursor: pointer; text-align: left;
+            font-size: 12px; transition: all 0.15s;
+        }
+        .view-jump:hover { background: #f8f7fb; border-color: #534AB7; }
+        .view-jump.active { background: #EEEDFE; border-color: #534AB7; color: #534AB7; font-weight: 500; }
+        .view-jump .num {
+            width: 20px; height: 20px; border-radius: 50%; background: #f1efe8;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 500; flex-shrink: 0;
+        }
+        .view-jump.active .num { background: #534AB7; color: white; }
+
+        .demo-actions {
+            margin-top: 12px;
+            background: white; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .demo-actions-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 16px; cursor: pointer; user-select: none;
+            font-size: 11px; font-weight: 500; color: #444441;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .demo-actions-header:hover { background: #f8f7f3; }
+        .demo-actions-header .chev {
+            font-size: 14px; color: #888780;
+            transition: transform 0.2s; flex-shrink: 0;
+        }
+        .demo-actions.open .demo-actions-header .chev { transform: rotate(180deg); }
+        .demo-actions-body {
+            display: none; padding: 0 16px 12px;
+        }
+        .demo-actions.open .demo-actions-body { display: block; }
+        .demo-btn {
+            display: flex; align-items: center; gap: 8px; width: 100%;
+            padding: 8px 12px; margin-bottom: 6px; border: 0.5px solid rgba(0,0,0,0.15);
+            border-radius: 6px; background: white; cursor: pointer; text-align: left;
+            font-size: 12px;
+        }
+        .demo-btn:hover { background: #f1efe8; }
+        .demo-btn i { font-size: 16px; color: #534AB7; }
+
+        /* Phone frame */
+        .phone {
+            width: 390px;
+            height: 800px;
+            background: #1a1a1a;
+            border-radius: 48px;
+            padding: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.1);
+            position: relative;
+            flex-shrink: 0;
+        }
+        .phone::before {
+            content: ''; position: absolute; top: 22px; left: 50%;
+            transform: translateX(-50%); width: 120px; height: 30px;
+            background: #1a1a1a; border-radius: 20px; z-index: 10;
+        }
+        .screen {
+            width: 100%; height: 100%; background: #faf9f6;
+            border-radius: 36px; overflow: hidden; position: relative;
+        }
+        .status-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 32px 8px; font-size: 14px; font-weight: 500;
+            background: #faf9f6; position: relative; z-index: 2;
+        }
+        .status-bar .right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+        /* View container */
+        .view {
+            display: none;
+            height: calc(100% - 48px);
+            overflow-y: auto;
+            flex-direction: column;
+            animation: fadeIn 0.3s;
+        }
+        .view.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .view::-webkit-scrollbar { display: none; }
+
+        .view-header {
+            padding: 4px 20px 16px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .back-btn {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: white; border: 0.5px solid rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .progress-dots {
+            display: flex; gap: 4px; flex: 1;
+        }
+        .progress-dots .dot {
+            flex: 1; height: 4px; background: rgba(0,0,0,0.08); border-radius: 2px;
+        }
+        .progress-dots .dot.done { background: #534AB7; }
+        .progress-dots .dot.active { background: #534AB7; }
+
+        .view-body {
+            flex: 1; padding: 8px 24px 20px; display: flex;
+            flex-direction: column;
+        }
+        .view-icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            background: #EEEDFE; display: flex; align-items: center;
+            justify-content: center; color: #534AB7; font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .view-title {
+            font-size: 24px; font-weight: 500; line-height: 1.25;
+            margin-bottom: 8px;
+        }
+        .view-subtitle {
+            font-size: 14px; color: #5F5E5A; line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        /* Buttons */
+        .primary-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 14px; background: #534AB7; color: white;
+            border: none; border-radius: 12px; font-size: 15px; font-weight: 500;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .primary-btn:hover { background: #3C3489; }
+        .primary-btn:disabled { background: #D3D1C7; cursor: not-allowed; }
+        .secondary-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px; background: transparent; color: #534AB7;
+            border: none; font-size: 13px; cursor: pointer; margin-top: 6px;
+        }
+        .text-btn {
+            background: transparent; border: none; color: #534AB7;
+            font-size: 13px; cursor: pointer; padding: 8px 0;
+        }
+
+        .bottom-bar {
+            padding: 16px 24px 24px;
+            background: linear-gradient(to bottom, transparent, #faf9f6 30%);
+            position: sticky; bottom: 0;
+        }
+
+        /* === V1: SPLASH === */
+        .splash {
+            background: linear-gradient(160deg, #534AB7 0%, #7F77DD 100%);
+            color: white;
+            height: 100%; padding: 0 32px;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding-bottom: 32px;
+        }
+        .splash-top { padding-top: 80px; text-align: center; }
+        .splash-logo {
+            width: 80px; height: 80px; background: white; border-radius: 24px;
+            margin: 0 auto 24px; display: flex; align-items: center;
+            justify-content: center; color: #534AB7; font-size: 40px;
+        }
+        .splash h1 { font-size: 32px; font-weight: 500; margin-bottom: 8px; }
+        .splash p { font-size: 15px; opacity: 0.9; line-height: 1.5; }
+        .splash-btn {
+            background: white; color: #534AB7; padding: 14px;
+            border-radius: 12px; border: none; font-size: 15px;
+            font-weight: 500; width: 100%; cursor: pointer;
+        }
+        .splash-trust {
+            text-align: center; font-size: 12px; opacity: 0.75; margin-top: 12px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+
+        /* === V2: LANGUAGE === */
+        .lang-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 16px;
+        }
+        .lang-card {
+            background: white; padding: 16px 12px; border-radius: 12px;
+            border: 1.5px solid rgba(0,0,0,0.08); cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            transition: all 0.15s;
+        }
+        .lang-card:hover { border-color: #534AB7; }
+        .lang-card.selected { border-color: #534AB7; background: #EEEDFE; }
+        .lang-card .flag { font-size: 32px; line-height: 1; }
+        .lang-card .label { font-size: 13px; font-weight: 500; }
+        .lang-card .native { font-size: 11px; color: #888780; }
+
+        /* === V3: NAME === */
+        .text-input {
+            width: 100%; padding: 14px 16px; font-size: 17px;
+            border: 1.5px solid rgba(0,0,0,0.1); border-radius: 12px;
+            background: white; outline: none; font-family: inherit;
+        }
+        .text-input:focus { border-color: #534AB7; }
+
+        /* === V4: SITUATION === */
+        .option-card {
+            background: white; padding: 16px; border-radius: 12px;
+            border: 1.5px solid rgba(0,0,0,0.08); cursor: pointer;
+            display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+            transition: all 0.15s;
+        }
+        .option-card:hover { border-color: #534AB7; }
+        .option-card.selected { border-color: #534AB7; background: #EEEDFE; }
+        .option-card .ico {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: #f1efe8; color: #534AB7;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .option-card.selected .ico { background: #534AB7; color: white; }
+        .option-card .content { flex: 1; }
+        .option-card .t { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+        .option-card .d { font-size: 12px; color: #888780; line-height: 1.4; }
+
+        /* === V5/V7: YES/NO === */
+        .yesno-card {
+            background: white; padding: 18px; border-radius: 14px;
+            border: 1.5px solid rgba(0,0,0,0.08); cursor: pointer;
+            margin-bottom: 10px;
+            transition: all 0.15s;
+        }
+        .yesno-card:hover { border-color: #534AB7; }
+        .yesno-card .head {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
+        }
+        .yesno-card .head i { font-size: 22px; color: #534AB7; }
+        .yesno-card .t { font-size: 16px; font-weight: 500; }
+        .yesno-card .d { font-size: 13px; color: #888780; line-height: 1.45; }
+        .yesno-card .help-link {
+            margin-top: 10px; font-size: 12px; color: #534AB7;
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* === V6: NO PATH === */
+        .help-card {
+            background: #EEEDFE; padding: 18px; border-radius: 14px;
+            margin-bottom: 16px;
+        }
+        .help-card .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: white; color: #534AB7;
+            padding: 4px 10px; border-radius: 12px;
+            font-size: 11px; font-weight: 500; margin-bottom: 10px;
+        }
+        .help-card h3 { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+        .help-card p { font-size: 13px; color: #5F5E5A; line-height: 1.5; }
+
+        .info-list {
+            background: white; padding: 14px 16px; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 12px;
+        }
+        .info-list .item {
+            display: flex; align-items: flex-start; gap: 10px; padding: 8px 0;
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+            font-size: 13px;
+        }
+        .info-list .item:last-child { border-bottom: none; }
+        .info-list .item i { color: #3B6D11; font-size: 18px; flex-shrink: 0; }
+
+        /* === V9: PERSONENNUMMER === */
+        .pin-input {
+            width: 100%; padding: 18px; font-size: 24px; font-weight: 500;
+            text-align: center; letter-spacing: 6px;
+            border: 1.5px solid rgba(0,0,0,0.1); border-radius: 12px;
+            background: white; outline: none; font-family: 'SF Mono', monospace;
+        }
+        .pin-input:focus { border-color: #534AB7; }
+        .or-divider {
+            display: flex; align-items: center; gap: 12px;
+            color: #888780; font-size: 12px; margin: 16px 0;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .or-divider::before, .or-divider::after {
+            content: ''; flex: 1; height: 0.5px; background: rgba(0,0,0,0.1);
+        }
+        .photo-btn {
+            width: 100%; padding: 16px; border-radius: 12px;
+            border: 1.5px dashed rgba(83, 74, 183, 0.4);
+            background: #f8f7fb; color: #534AB7; font-size: 14px;
+            cursor: pointer; display: flex; align-items: center;
+            justify-content: center; gap: 8px; font-weight: 500;
+        }
+        .photo-btn i { font-size: 20px; }
+
+        /* === V10: LETTER SCAN === */
+        .scan-preview {
+            background: white; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.1); padding: 14px;
+            margin-bottom: 14px; font-size: 11px; color: #888780;
+            font-style: italic; line-height: 1.5;
+            max-height: 110px; overflow: hidden; position: relative;
+        }
+        .scan-preview::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+            height: 30px; background: linear-gradient(transparent, white);
+        }
+        .scan-result {
+            background: #EEEDFE; border-radius: 12px; padding: 16px;
+            margin-bottom: 12px;
+        }
+        .scan-result .badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #534AB7; color: white;
+            padding: 3px 8px; border-radius: 10px;
+            font-size: 10px; font-weight: 500; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .scan-result .text {
+            font-size: 14px; line-height: 1.5; color: #2c2c2a;
+            margin-bottom: 12px;
+        }
+        .extracted-data {
+            background: white; border-radius: 10px; padding: 10px 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 6px;
+        }
+        .extracted-data .label { font-size: 11px; color: #888780; text-transform: uppercase; letter-spacing: 0.5px; }
+        .extracted-data .value { font-size: 14px; font-weight: 500; }
+
+        /* === V11: LOADING === */
+        .loading-view {
+            height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 40px 32px;
+            text-align: center;
+        }
+        .loading-spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(83, 74, 183, 0.15);
+            border-top-color: #534AB7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-view h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+        .loading-view p { font-size: 13px; color: #888780; line-height: 1.5; }
+        .loading-tasks {
+            margin-top: 30px; width: 100%; max-width: 280px;
+        }
+        .loading-task {
+            display: flex; align-items: center; gap: 10px; padding: 8px 0;
+            font-size: 13px; color: #888780; opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+        .loading-task.done { opacity: 1; color: #2c2c2a; }
+        .loading-task.done i { color: #3B6D11; }
+        .loading-task i { color: #D3D1C7; font-size: 18px; }
+
+        /* === V12: HOME === */
+        .home-content {
+            height: 100%; overflow-y: auto;
+            padding: 0 20px 20px;
+        }
+        .home-content::-webkit-scrollbar { display: none; }
+        .greeting {
+            padding: 16px 0 12px;
+        }
+        .greeting .hi { font-size: 14px; color: #888780; }
+        .greeting .name { font-size: 22px; font-weight: 500; margin-top: 2px; }
+
+        /* Two info tiles row (Status + voraussichtliche Zahlung) */
+        .info-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
+        }
+        .info-tile {
+            background: white; padding: 12px; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.08);
+        }
+        .info-tile .lbl { font-size: 10px; color: #888780; text-transform: uppercase; letter-spacing: 0.5px; }
+        .info-tile .val { font-size: 15px; font-weight: 500; margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+        .info-tile .sub { font-size: 11px; color: #888780; margin-top: 2px; }
+        .info-tile.green { background: #EAF3DE; }
+        .info-tile.green .val { color: #173404; }
+        .info-tile.green .sub { color: #173404; opacity: 0.7; }
+        .info-tile.green .lbl { color: #173404; opacity: 0.7; }
+
+        .next-step {
+            background: white; border-radius: 16px; padding: 18px;
+            border: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 12px;
+        }
+        .next-step .urgent {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #FCEBEB; color: #A32D2D;
+            padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500;
+        }
+        .next-step h3 { font-size: 17px; font-weight: 500; margin: 10px 0 6px; line-height: 1.3; }
+        .next-step .desc { font-size: 13px; color: #5F5E5A; line-height: 1.5; margin-bottom: 12px; }
+
+        /* AG warning banner */
+        .ag-warning {
+            background: #FAEEDA; border-radius: 12px; padding: 12px;
+            margin-bottom: 12px;
+            display: flex; gap: 10px; align-items: flex-start;
+            border: 0.5px solid #FAC775;
+        }
+        .ag-warning i { color: #BA7517; font-size: 20px; flex-shrink: 0; }
+        .ag-warning .ag-content { flex: 1; }
+        .ag-warning .ag-title { font-size: 13px; font-weight: 500; color: #633806; margin-bottom: 2px; }
+        .ag-warning .ag-desc { font-size: 12px; color: #633806; line-height: 1.4; }
+        .ag-warning .ag-action {
+            background: white; border: 0.5px solid #BA7517;
+            border-radius: 6px; padding: 4px 10px; font-size: 11px;
+            color: #854F0B; font-weight: 500; cursor: pointer;
+            margin-top: 6px; display: inline-block;
+        }
+        .ag-warning.done { background: #EAF3DE; border-color: #97C459; }
+        .ag-warning.done i { color: #3B6D11; }
+        .ag-warning.done .ag-title, .ag-warning.done .ag-desc { color: #173404; }
+        .ag-warning.done .ag-action { border-color: #3B6D11; color: #2C5008; }
+
+        .api-key-section {
+            margin-top: 12px;
+            background: white;
+            border: 0.5px solid rgba(0,0,0,0.15);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .api-key-label {
+            font-size: 11px; font-weight: 500; color: #444441;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+        }
+        .api-key-input {
+            width: 100%; box-sizing: border-box;
+            background: #f8f7f3; border: 0.5px solid rgba(0,0,0,0.15);
+            border-radius: 8px; padding: 9px 11px;
+            color: #1a1a18; font-size: 12px; font-family: monospace;
+            outline: none; transition: border-color 0.2s;
+        }
+        .api-key-input:focus { border-color: #534AB7; box-shadow: 0 0 0 3px rgba(83,74,183,0.12); }
+        .api-key-input::placeholder { color: #aaa; }
+        .api-key-hint { font-size: 10px; color: #888780; margin-top: 7px; display: flex; align-items: center; gap: 4px; }
+        .quick-tile {
+            background: white; padding: 14px 12px; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.1); cursor: pointer; text-align: left;
+        }
+        .quick-tile i { font-size: 20px; color: #534AB7; margin-bottom: 6px; display: block; }
+        .quick-tile .t { font-size: 12px; font-weight: 500; }
+        .quick-tile .s { font-size: 11px; color: #888780; margin-top: 2px; }
+
+        .timeline-title {
+            font-size: 12px; color: #888780; text-transform: uppercase;
+            letter-spacing: 0.5px; margin: 8px 4px;
+        }
+        .timeline {
+            background: white; border-radius: 12px; padding: 4px 0;
+            border: 0.5px solid rgba(0,0,0,0.1);
+        }
+        .timeline-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .ti-dot {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; flex-shrink: 0; font-weight: 500;
+        }
+        .ti-done { background: #EAF3DE; color: #3B6D11; }
+        .ti-now { background: #534AB7; color: white; }
+        .ti-waiting { background: #FAEEDA; color: #BA7517; }
+        .ti-next { background: #F1EFE8; color: #888780; }
+        .ti-month { background: #E6F1FB; color: #185FA5; }
+        .ti-content { flex: 1; }
+        .ti-content .label { font-size: 13px; font-weight: 500; }
+        .ti-content .meta { font-size: 11px; color: #888780; margin-top: 1px; }
+        .ti-content .meta.now { color: #534AB7; font-weight: 500; }
+        .ti-content .meta.warning { color: #BA7517; font-weight: 500; }
+
+        .bottom-nav {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: white; padding: 10px 20px 20px;
+            display: flex; justify-content: space-around;
+            border-top: 0.5px solid rgba(0,0,0,0.08);
+            border-radius: 0 0 36px 36px;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 2px; font-size: 10px; color: #888780;
+            cursor: pointer; padding: 4px 8px;
+        }
+        .nav-item i { font-size: 22px; }
+        .nav-item.active { color: #534AB7; }
+
+        /* === Demo banner === */
+        .demo-banner {
+            background: #FAEEDA; padding: 6px 14px; font-size: 11px;
+            color: #854F0B; text-align: center;
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+        }
+
+        /* === Help button on title === */
+        .help-fab {
+            position: absolute; top: 56px; right: 20px; z-index: 20;
+            width: 36px; height: 36px; border-radius: 50%;
+            background: white; border: 0.5px solid rgba(0,0,0,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* === Modal === */
+        .overlay {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 100;
+            display: none; align-items: flex-end; justify-content: center;
+            border-radius: 36px;
+        }
+        .overlay.show { display: flex; animation: bgFade 0.2s; }
+        @keyframes bgFade { from { opacity: 0; } to { opacity: 1; } }
+        .sheet {
+            background: white; width: 100%; max-height: 85%;
+            border-radius: 24px 24px 0 0; padding: 20px;
+            overflow-y: auto; animation: slideUp 0.3s;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .sheet-handle {
+            width: 40px; height: 4px; background: #D3D1C7;
+            border-radius: 2px; margin: 0 auto 16px;
+        }
+        .emergency-card {
+            background: #FCEBEB; border-radius: 12px; padding: 14px;
+            margin-bottom: 12px;
+        }
+        .emergency-card .title {
+            color: #A32D2D; font-weight: 500; font-size: 14px; margin-bottom: 4px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .emergency-card p { font-size: 12px; color: #501313; line-height: 1.5; }
+
+        .contact-card {
+            background: white; padding: 14px; border-radius: 12px;
+            border: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 8px;
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+        }
+        .contact-card .ico {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #EEEDFE; color: #534AB7;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .contact-card .info { flex: 1; }
+        .contact-card .t { font-size: 14px; font-weight: 500; }
+        .contact-card .s { font-size: 12px; color: #888780; }
+
+        /* Actor card (in detail view) */
+        .actor-card {
+            background: white; border-radius: 12px; padding: 14px;
+            border: 0.5px solid rgba(0,0,0,0.08); margin-bottom: 10px;
+        }
+        .actor-card.waiting { border-color: #FAC775; background: #FAEEDA; }
+        .ac-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .ac-avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: #EEEDFE; color: #534AB7;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 500; flex-shrink: 0;
+        }
+        .ac-avatar.warning { background: #FAC775; color: #633806; }
+        .ac-name { font-size: 14px; font-weight: 500; }
+        .ac-role { font-size: 11px; color: #888780; }
+        .ac-desc { font-size: 12px; color: #5F5E5A; line-height: 1.5; margin-bottom: 8px; }
+        .ac-desc.warning { color: #633806; }
+        .status {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 8px; border-radius: 12px;
+            font-size: 11px; font-weight: 500;
+        }
+        .status .d { width: 6px; height: 6px; border-radius: 50%; }
+        .status.waiting-ag { background: #FAEEDA; color: #854F0B; }
+        .status.waiting-ag .d { background: #BA7517; animation: pulse 1.5s infinite; }
+        .status.done { background: #EAF3DE; color: #173404; }
+        .status.done .d { background: #3B6D11; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* ===== ANTRAGSANSICHT ===== */
+        .antrag-screen { height: calc(100% - 48px); display: none; flex-direction: column; }
+        .antrag-screen.active { display: flex; }
+        .a-header { padding: 40px 20px 8px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .a-header h2 { font-size: 20px; font-weight: 500; flex: 1; }
+        .mode-toggle { display: flex; gap: 4px; margin: 0 20px 8px; background: #f1efe8; border-radius: 10px; padding: 4px; flex-shrink: 0; }
+        .mode-toggle button { flex: 1; padding: 8px; border: none; background: transparent; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: #888780; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .mode-toggle button.active { background: white; color: #534AB7; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+        .mode-toggle button i { font-size: 16px; }
+        .a-content { flex: 1; overflow-y: auto; padding: 0 20px 20px; scrollbar-width: none; }
+        .a-content::-webkit-scrollbar { display: none; }
+        .a-sub { display: none; flex: 1; flex-direction: column; min-height: 0; }
+        .a-sub.active { display: flex; }
+
+        .status-banner-a { border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; background: #E6F1FB; }
+        .status-banner-a i { color: #185FA5; font-size: 22px; }
+        .status-banner-a .sb-text { flex: 1; }
+        .status-banner-a .sb-title { font-size: 14px; font-weight: 500; }
+        .status-banner-a .sb-sub { font-size: 12px; color: #5F5E5A; margin-top: 1px; }
+
+        .pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+        .pill .d { width: 6px; height: 6px; border-radius: 50%; }
+        .pill.progress { background: #E6F1FB; color: #0C447C; } .pill.progress .d { background: #185FA5; }
+        .pill.done { background: #EAF3DE; color: #173404; } .pill.done .d { background: #3B6D11; }
+        .pill.pending { background: #FAEEDA; color: #854F0B; } .pill.pending .d { background: #BA7517; }
+        .pill.missing { background: #FCEBEB; color: #501313; } .pill.missing .d { background: #A32D2D; }
+
+        .sec-nav { background: white; border-radius: 12px; border: 0.5px solid rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 14px; }
+        .sec-nav-item { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 0.5px solid rgba(0,0,0,0.05); cursor: pointer; }
+        .sec-nav-item:last-child { border-bottom: none; }
+        .sec-nav-item:hover { background: #f8f7fb; }
+        .sec-nav-dot { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; background: #F1EFE8; color: #888780; }
+        .sec-nav-dot.done { background: #EAF3DE; color: #3B6D11; }
+        .sec-nav-dot.warning { background: #FAEEDA; color: #BA7517; }
+        .sec-nav-label { flex: 1; font-size: 13px; }
+        .sec-nav-item .chev2 { color: #888780; font-size: 14px; }
+
+        .fst { font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+        .fsub { font-size: 12px; color: #888780; margin-bottom: 16px; line-height: 1.4; }
+        .fg { margin-bottom: 14px; }
+        .fl { font-size: 12px; color: #444441; font-weight: 500; margin-bottom: 6px; display: block; }
+        .fl .req { color: #A32D2D; }
+        .fi, .fs2 { width: 100%; padding: 11px 12px; font-size: 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: 10px; background: white; outline: none; font-family: inherit; color: #2c2c2a; }
+        .fi:focus, .fs2:focus { border-color: #534AB7; }
+        .frow { display: grid; grid-template-columns: 2fr 1fr; gap: 8px; }
+        .pf-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: #534AB7; background: #EEEDFE; padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle; }
+
+        .vsec { background: white; border-radius: 12px; border: 0.5px solid rgba(0,0,0,0.08); margin-bottom: 10px; overflow: hidden; }
+        .vgroup-label { font-size: 11px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.4px; margin: 14px 4px 8px; }
+        .field-card { background: white; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px 14px 2px; margin-bottom: 10px; }
+        .fc-head { font-size: 13px; font-weight: 500; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .fc-head i { color: #534AB7; font-size: 18px; }
+        .bm-month { display: flex; align-items: center; gap: 10px; padding: 4px 20px 10px; flex-shrink: 0; }
+        .bm-nav { width: 34px; height: 34px; border-radius: 50%; background: white; border: 0.5px solid rgba(0,0,0,0.12); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; color: #534AB7; }
+        .bm-month-mid { flex: 1; text-align: center; }
+        .bm-month-label { font-size: 16px; font-weight: 500; }
+        .bm-month-sub { font-size: 11px; color: #888780; margin-top: 1px; }
+        .bm-count { background: white; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+        .bm-count .num { font-size: 28px; font-weight: 500; color: #534AB7; line-height: 1; }
+        .bm-count .ct { flex: 1; }
+        .bm-count .ct .t { font-size: 13px; font-weight: 500; }
+        .bm-count .ct .s { font-size: 11px; color: #888780; margin-top: 2px; }
+        .bm-card { background: white; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; position: relative; }
+        .bm-card .bm-firma { font-size: 14px; font-weight: 500; }
+        .bm-card .bm-stelle { font-size: 12px; color: #5F5E5A; margin-top: 1px; }
+        .bm-card .bm-datum { font-size: 11px; color: #888780; margin-top: 4px; }
+        .bm-card .rm { position: absolute; top: 10px; right: 10px; color: #A32D2D; cursor: pointer; font-size: 16px; }
+        .res-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; margin-top: 6px; }
+        .res-pill.offen { background: #FAEEDA; color: #633806; }
+        .res-pill.gespraech { background: #E6F1FB; color: #0C447C; }
+        .res-pill.anstellung { background: #EAF3DE; color: #173404; }
+        .res-pill.absage { background: #FCEBEB; color: #501313; }
+        .vsh { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
+        .vsh:hover { background: #f8f7fb; }
+        .vedit { width: 28px; height: 28px; border-radius: 8px; background: #EEEDFE; color: #534AB7; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; font-size: 15px; }
+        .vedit:hover { background: #ded9fb; }
+        .vsd { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .vsd.done { background: #EAF3DE; color: #3B6D11; }
+        .vsd.warning { background: #FAEEDA; color: #BA7517; }
+        .vst { flex: 1; font-size: 13px; font-weight: 500; }
+        .vsb { padding: 0 14px 12px; }
+        .vsr { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid rgba(0,0,0,0.05); font-size: 12px; }
+        .vsr:last-child { border-bottom: none; }
+        .vsr .lbl { color: #888780; }
+        .vsr .val { font-weight: 500; text-align: right; max-width: 60%; }
+
+        .docrow { background: white; padding: 10px 12px; border-radius: 10px; border: 0.5px solid rgba(0,0,0,0.08); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+        .docrow i { font-size: 18px; color: #534AB7; }
+        .docrow.missing { background: #FAEEDA; border-color: #FAC775; } .docrow.missing i { color: #BA7517; }
+        .docrow.incoming { background: #E6F1FB; border-color: #B5D4F4; } .docrow.incoming i { color: #185FA5; }
+        .docrow.todo { background: transparent; border: 1px dashed rgba(83,74,183,0.35); cursor: pointer; }
+        .docrow.todo:hover { background: #f8f7fb; border-color: #534AB7; }
+        .docrow.todo i { color: #888780; }
+        .docrow.todo .name { color: #5F5E5A; }
+        .docrow .up { width: 28px; height: 28px; border-radius: 8px; background: #EEEDFE; color: #534AB7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+        .docrow.opt .up { background: #f1efe8; color: #888780; }
+        .docrow .info { flex: 1; } .docrow .name { font-size: 13px; font-weight: 500; } .docrow .meta { font-size: 11px; color: #888780; }
+        .docrow .check { color: #3B6D11; }
+
+        .ag-section { background: #FAEEDA; border: 0.5px solid #FAC775; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+        .ag-section.done { background: #EAF3DE; border-color: #97C459; }
+        .ag-sec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .ag-sec-head i { color: #BA7517; font-size: 18px; }
+        .ag-section.done .ag-sec-head i { color: #3B6D11; }
+        .ag-sec-title { font-size: 14px; font-weight: 500; color: #633806; flex: 1; }
+        .ag-section.done .ag-sec-title { color: #173404; }
+        .ag-sec-desc { font-size: 12px; color: #633806; line-height: 1.5; margin-bottom: 10px; }
+        .ag-section.done .ag-sec-desc { color: #173404; }
+        .ag-sec-btn { background: white; border: 0.5px solid #BA7517; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #854F0B; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+
+        .a-bottom { padding: 12px 20px 16px; background: linear-gradient(to top, #faf9f6, rgba(250,249,246,0.95) 80%, transparent); flex-shrink: 0; display: flex; gap: 8px; }
+        .a-prog { height: 4px; background: #f1efe8; border-radius: 2px; overflow: hidden; margin: 0 20px 12px; flex-shrink: 0; }
+        .a-prog .fill { height: 100%; background: #534AB7; border-radius: 2px; transition: width 0.4s; }
+        .ghost-btn { padding: 13px 16px; background: white; color: #534AB7; border: 0.5px solid rgba(83,74,183,0.3); border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+
+        /* ===== STEPPER (Formular 10000d) ===== */
+        .step-icon { width: 48px; height: 48px; border-radius: 13px; background: #EEEDFE; display: flex; align-items: center; justify-content: center; color: #534AB7; font-size: 24px; margin-bottom: 14px; }
+        .step-title { font-size: 21px; font-weight: 500; line-height: 1.25; margin-bottom: 6px; }
+        .step-sub { font-size: 13px; color: #5F5E5A; line-height: 1.5; margin-bottom: 18px; }
+        .hint { font-size: 11px; color: #888780; margin-top: 4px; line-height: 1.4; }
+        .fs { width: 100%; padding: 11px 12px; font-size: 14px; border: 1px solid rgba(0,0,0,0.12); border-radius: 10px; background: white; outline: none; font-family: inherit; color: #2c2c2a; }
+        .fs:focus { border-color: #534AB7; }
+        .frow3 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .pf { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; color: #534AB7; background: #EEEDFE; padding: 1px 6px; border-radius: 8px; margin-left: 6px; vertical-align: middle; }
+        .yn { display: flex; gap: 8px; }
+        .yn .opt { flex: 1; padding: 11px; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 10px; text-align: center; cursor: pointer; font-size: 13px; font-weight: 500; color: #5F5E5A; background: white; }
+        .yn .opt.sel { border-color: #534AB7; background: #EEEDFE; color: #26215C; }
+        .radio-list .ropt { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1.5px solid rgba(0,0,0,0.1); border-radius: 10px; margin-bottom: 6px; cursor: pointer; font-size: 13px; background: white; }
+        .radio-list .ropt.sel { border-color: #534AB7; background: #EEEDFE; }
+        .radio-list .ropt .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #c9c6ba; flex-shrink: 0; }
+        .radio-list .ropt.sel .dot { border-color: #534AB7; background: radial-gradient(#534AB7 40%, white 45%); }
+        .chk { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; margin-bottom: 6px; cursor: pointer; font-size: 13px; background: white; line-height: 1.4; }
+        .chk .box { width: 18px; height: 18px; border-radius: 5px; border: 2px solid #c9c6ba; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; margin-top: 1px; }
+        .chk.sel .box { background: #534AB7; border-color: #534AB7; }
+        .chk.sel { border-color: #534AB7; background: #f8f7fb; }
+        .info-box { background: #f8f7fb; border-radius: 10px; padding: 12px; font-size: 12px; color: #5F5E5A; line-height: 1.5; display: flex; gap: 8px; }
+        .info-box i { color: #534AB7; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .info-box.warn { background: #FAEEDA; color: #633806; } .info-box.warn i { color: #BA7517; }
+        .info-box.ok { background: #EAF3DE; color: #173404; } .info-box.ok i { color: #3B6D11; }
+        .ag-card { background: #FAEEDA; border: 0.5px solid #FAC775; border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+        .ag-h { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .ag-h i { color: #BA7517; font-size: 18px; } .ag-h .t { font-size: 14px; font-weight: 500; color: #633806; flex: 1; }
+        .ag-desc { font-size: 12px; color: #633806; line-height: 1.5; margin-bottom: 10px; }
+        .ag-btn { background: white; border: 0.5px solid #BA7517; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #854F0B; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .emp-card { background: white; border: 0.5px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 12px; margin-bottom: 8px; position: relative; }
+        .emp-card .rm { position: absolute; top: 8px; right: 8px; color: #A32D2D; cursor: pointer; font-size: 16px; }
+        .add-btn { width: 100%; padding: 11px; border: 1px dashed rgba(83,74,183,0.4); border-radius: 10px; background: #f8f7fb; color: #534AB7; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .review-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 0.5px solid rgba(0,0,0,0.06); font-size: 13px; gap: 12px; }
+        .review-row:last-child { border-bottom: none; }
+        .review-row .l { color: #888780; flex-shrink: 0; } .review-row .v { font-weight: 500; text-align: right; }
+
+        @media (max-width: 900px) {
+            .stage { flex-direction: column; align-items: center; }
+            .sidebar { max-width: 100%; position: static; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="stage">
+
+    <!-- Left: Pitch sidebar -->
+    <div class="sidebar">
+        <span class="tag">GOVTECH HACKATHON 2026</span>
+        <h1>Freddy's Companion</h1>
+        <p>Interaktiver Prototyp für Freddy Fremd – von der Sprachauswahl bis zur Auszahlung. Dokumente hochladen, Antrag ausfüllen, Arbeitgeber erinnern.</p>
+
+        <div class="nav-controls">
+            <h3>Springe zu View</h3>
+            <div class="view-list" id="viewList"></div>
+        </div>
+
+        <div class="demo-actions" id="demoActions">
+            <div class="demo-actions-header" onclick="document.getElementById('demoActions').classList.toggle('open')">
+                <span><i class="ti ti-player-play" style="margin-right:6px;font-size:13px;"></i>Pitch-Aktionen</span>
+                <i class="ti ti-chevron-down chev"></i>
+            </div>
+            <div class="demo-actions-body">
+                <button class="demo-btn" onclick="goToView(0)">
+                    <i class="ti ti-player-play"></i> Von vorne beginnen
+                </button>
+                <button class="demo-btn" onclick="goToView(11)">
+                    <i class="ti ti-home"></i> Direkt zum Home-Screen
+                </button>
+                <button class="demo-btn" onclick="openAntrag()">
+                    <i class="ti ti-file-text"></i> Antragsansicht öffnen
+                </button>
+                <button class="demo-btn" onclick="openBemueh()">
+                    <i class="ti ti-briefcase"></i> Arbeitsbemühungen öffnen
+                </button>
+                <button class="demo-btn" onclick="openAVP()">
+                    <i class="ti ti-clipboard-check"></i> AVP-Meldung öffnen
+                </button>
+                <button class="demo-btn" onclick="showAGDetail()">
+                    <i class="ti ti-building"></i> Arbeitgeber-Status zeigen
+                </button>
+                <button class="demo-btn" onclick="toggleAGStatus()">
+                    <i class="ti ti-file-check"></i> Arbeitgeber-Status ändern
+                </button>
+                <button class="demo-btn" onclick="resetAntragData()">
+                    <i class="ti ti-refresh"></i> Formular/Daten zurücksetzen
+                </button>
+                <button class="demo-btn" onclick="showEmergency()">
+                    <i class="ti ti-shield-exclamation"></i> Notfall-Modus zeigen
+                </button>
+                <button class="demo-btn" onclick="showHelp()">
+                    <i class="ti ti-headphones"></i> Hilfe-Modal zeigen
+                </button>
+            </div>
+        </div>
+
+        <div class="api-key-section">
+            <h3 class="api-key-label"><i class="ti ti-key"></i> Claude API Key</h3>
+            <input
+                    type="password"
+                    id="apiKeyInput"
+                    class="api-key-input"
+                    placeholder="sk-ant-..."
+                    oninput="saveApiKey(this.value)"
+            />
+            <p class="api-key-hint" style="margin-top:6px; color:#888780; font-size:10px; line-height:1.5;">
+                <i class="ti ti-info-circle" style="font-size:11px; flex-shrink:0;"></i>
+                Demo-Zweck: Für den Hackathon nutzen wir die Claude API zur Dokumentenerkennung. Im echten Produkt würde ein lokales LLM oder ein TensorFlow-Modell eingesetzt – keine externen API-Calls, keine Datenweitergabe.
+            </p>
+        </div>
+
+        <p style="font-size: 11px; color: #888780; margin-top: 16px; text-align: left;">Persona "Freddy Fremd" · AVA Kanton Bern · Projekt #36</p>
+    </div>
+
+    <!-- Right: Phone mockup -->
+    <div class="phone">
+        <div class="screen">
+
+            <!-- ===== VIEW 1: SPLASH ===== -->
+            <div class="view active" data-view="0">
+                <div class="splash">
+                    <div class="splash-top">
+                        <div class="splash-logo">
+                            <i class="ti ti-compass"></i>
+                        </div>
+                        <h1>Companion</h1>
+                        <p data-i18n="splash_tagline">Dein Begleiter durch die Arbeitslosigkeit – einfach, klar, in deiner Sprache.</p>
+                    </div>
+                    <div>
+                        <button class="splash-btn" onclick="goToView(1)" data-i18n="splash_start">Los geht's</button>
+                        <div class="splash-trust">
+                            <i class="ti ti-shield-check"></i>
+                            <span data-i18n="splash_trust">Sicher · Kostenlos · Vom Kanton Bern</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== VIEW 2: LANGUAGE ===== -->
+            <div class="view" data-view="1">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="progress-dots">
+                        <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div class="view-icon"><i class="ti ti-world"></i></div>
+                    <div class="view-title" data-i18n="lang_title">Welche Sprache sprichst du?</div>
+                    <div class="view-subtitle" data-i18n="lang_sub">Wir erklären dir alles in deiner Muttersprache. Du kannst sie später jederzeit ändern.</div>
+
+                    <div class="lang-grid">
+                        <div class="lang-card" onclick="selectLang(this, 'de')">
+                            <div class="flag">🇩🇪</div>
+                            <div class="label">Deutsch</div>
+                            <div class="native">Deutsch</div>
+                        </div>
+                        <div class="lang-card" onclick="selectLang(this, 'uk')">
+                            <div class="flag">🇺🇦</div>
+                            <div class="label">Ukrainisch</div>
+                            <div class="native">Українська</div>
+                        </div>
+                        <div class="lang-card" onclick="selectLang(this, 'ar')">
+                            <div class="flag">🇸🇾</div>
+                            <div class="label">Arabisch</div>
+                            <div class="native">العربية</div>
+                        </div>
+                        <div class="lang-card" onclick="selectLang(this, 'pt')">
+                            <div class="flag">🇵🇹</div>
+                            <div class="label">Portugiesisch</div>
+                            <div class="native">Português</div>
+                        </div>
+                        <div class="lang-card" onclick="selectLang(this, 'ti')">
+                            <div class="flag">🇪🇷</div>
+                            <div class="label">Tigrinya</div>
+                            <div class="native">ትግርኛ</div>
+                        </div>
+                        <div class="lang-card" onclick="selectLang(this, 'en')">
+                            <div class="flag">🇬🇧</div>
+                            <div class="label">English</div>
+                            <div class="native">English</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <button class="primary-btn" id="lang-next" disabled onclick="goToView(3)">
+                        <span data-i18n="weiter">Weiter</span> <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== VIEW 3: NAME ===== -->
+            <!-- ===== VIEW 4: SITUATION ===== -->
+            <div class="view" data-view="3">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="back-btn" onclick="goToView(1)"><i class="ti ti-arrow-left"></i></div>
+                    <div class="progress-dots">
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot active"></div>
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div class="view-icon"><i class="ti ti-help-hexagon"></i></div>
+                    <div class="view-title" data-i18n="situation_title">Wie ist deine Situation, <span id="greetName">Freddy</span>?</div>
+                    <div class="view-subtitle" data-i18n="situation_sub">Wähle was am besten passt. Wir erstellen dir danach einen persönlichen Plan.</div>
+
+                    <div class="option-card" onclick="selectSituation(this)">
+                        <div class="ico"><i class="ti ti-briefcase-off"></i></div>
+                        <div class="content">
+                            <div class="t" data-i18n="opt1_t">Ich habe meinen Job verloren</div>
+                            <div class="d" data-i18n="opt1_d">Mein letzter Arbeitstag ist bereits vorbei</div>
+                        </div>
+                    </div>
+                    <div class="option-card" onclick="selectSituation(this)">
+                        <div class="ico"><i class="ti ti-mail-x"></i></div>
+                        <div class="content">
+                            <div class="t" data-i18n="opt2_t">Ich habe die Kündigung erhalten</div>
+                            <div class="d" data-i18n="opt2_d">Ich arbeite noch, aber bald nicht mehr</div>
+                        </div>
+                    </div>
+                    <div class="option-card" onclick="selectSituation(this)">
+                        <div class="ico"><i class="ti ti-alert-circle"></i></div>
+                        <div class="content">
+                            <div class="t" data-i18n="opt3_t">Arbeitslosigkeit droht</div>
+                            <div class="d" data-i18n="opt3_d">Ich vermute, dass ich bald gekündigt werde</div>
+                        </div>
+                    </div>
+                    <div class="option-card" onclick="selectSituation(this)">
+                        <div class="ico"><i class="ti ti-dots"></i></div>
+                        <div class="content">
+                            <div class="t" data-i18n="opt4_t">Etwas anderes</div>
+                            <div class="d" data-i18n="opt4_d">Z.B. Wiedereinstieg, Ausgesteuert</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <button class="primary-btn" id="situation-next" disabled onclick="goToView(12)">
+                        <span data-i18n="weiter">Weiter</span> <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== VIEW (neu): ALE BEANTRAGEN – KASSENWAHL ===== -->
+            <div class="view" data-view="12">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="back-btn" onclick="goToView(3)"><i class="ti ti-arrow-left"></i></div>
+                    <div class="progress-dots">
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+                        <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div class="view-icon"><i class="ti ti-cash"></i></div>
+                    <div class="view-title">Ich will Arbeitslosengeld beantragen</div>
+                    <div class="view-subtitle">Du darfst deine Arbeitslosenkasse frei wählen – sie zahlt dir das Geld aus. Du kannst sie später wechseln.</div>
+
+                    <div id="alkList">
+                        <div class="option-card selected" onclick="selectALK(this)">
+                            <div class="ico"><i class="ti ti-building-bank"></i></div>
+                            <div class="content">
+                                <div class="t">Unia Arbeitslosenkasse</div>
+                                <div class="d">Grösste Kasse, Beratung in vielen Sprachen</div>
+                            </div>
+                        </div>
+                        <div class="option-card" onclick="selectALK(this)">
+                            <div class="ico"><i class="ti ti-building"></i></div>
+                            <div class="content">
+                                <div class="t">Kantonale Arbeitslosenkasse Bern</div>
+                                <div class="d">Öffentliche Kasse des Kantons</div>
+                            </div>
+                        </div>
+                        <div class="option-card" onclick="selectALK(this)">
+                            <div class="ico"><i class="ti ti-briefcase"></i></div>
+                            <div class="content">
+                                <div class="t">Syna Arbeitslosenkasse</div>
+                                <div class="d">Gewerkschaftliche Kasse</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 14px; padding: 12px; background: #EAF3DE; border-radius: 10px; display: flex; gap: 8px; align-items: flex-start;">
+                        <i class="ti ti-info-circle" style="color: #3B6D11; font-size: 18px; flex-shrink: 0;"></i>
+                        <div style="font-size: 12px; color: #173404; line-height: 1.5;">Die Höhe des Geldes ist bei allen Kassen gleich – es ist gesetzlich geregelt. Du wählst nur, wer dich betreut.</div>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <button class="primary-btn" id="alk-next" onclick="goToView(13)">
+                        Weiter <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== VIEW (neu): RAV-VERIFIKATION – MAGIC LOGIN ===== -->
+            <div class="view" data-view="13">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="back-btn" onclick="goToView(12)"><i class="ti ti-arrow-left"></i></div>
+                    <div class="progress-dots">
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+                        <div class="dot done"></div><div class="dot active"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div id="magicStart">
+                        <div class="view-icon"><i class="ti ti-fingerprint"></i></div>
+                        <div class="view-title">RAV-Anmeldung bestätigen</div>
+                        <div class="view-subtitle">Melde dich einmal mit AGOV an – wir holen deine RAV-Daten sicher von Job-Room. Kein Abtippen.</div>
+
+                        <div class="help-card">
+                            <div class="badge"><i class="ti ti-lock" style="font-size: 12px;"></i> Sicher</div>
+                            <h3>Anmeldung ohne Passwort</h3>
+                            <p>AGOV ist das offizielle Login der Schweiz. Du bestätigst nur kurz auf deinem Handy – fertig.</p>
+                        </div>
+                        <button class="primary-btn" id="magicBtn" onclick="magicLogin()" style="margin-top: 16px;">
+                            <i class="ti ti-key"></i> Mit AGOV anmelden
+                        </button>
+                    </div>
+
+                    <div id="magicDone" style="display:none;">
+                        <div class="view-icon" style="background:#EAF3DE;color:#3B6D11;"><i class="ti ti-circle-check"></i></div>
+                        <div class="view-title">RAV-Anmeldung bestätigt</div>
+                        <div class="view-subtitle">Wir haben deine Daten sicher übernommen.</div>
+                        <div class="vsec" style="margin-top:4px;">
+                            <div class="vsb" style="padding:12px 14px;">
+                                <div class="vsr"><span class="lbl">Name</span><span class="val">Freddy Fremd</span></div>
+                                <div class="vsr"><span class="lbl">Personennummer</span><span class="val">12345678</span></div>
+                                <div class="vsr"><span class="lbl">RAV</span><span class="val">RAV Bern</span></div>
+                                <div class="vsr"><span class="lbl">Status</span><span class="val" style="color:#3B6D11;">angemeldet ✓</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <button class="primary-btn" id="magicNext" onclick="goToView(10)" style="display:none;">
+                        Weiter <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- ===== VIEW 6: NO RAV - HELP PATH ===== -->
+            <div class="view" data-view="5">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="back-btn" onclick="goToView(3)"><i class="ti ti-arrow-left"></i></div>
+                    <div class="progress-dots">
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+                        <div class="dot done"></div><div class="dot active"></div><div class="dot"></div>
+                        <div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div class="view-icon"><i class="ti ti-hand-stop"></i></div>
+                    <div class="view-title">Keine Sorge, ich helfe dir</div>
+                    <div class="view-subtitle">Du musst zuerst beim RAV anmelden, damit du Arbeitslosengeld bekommst. Je früher, desto besser.</div>
+
+                    <div class="help-card">
+                        <div class="badge"><i class="ti ti-clock" style="font-size: 12px;"></i> Wichtig zu wissen</div>
+                        <h3>Melde dich SOFORT an</h3>
+                        <p>Für jeden Tag, an dem du dich nicht meldest, verlierst du Geld. Das ist gesetzlich so.</p>
+                    </div>
+
+                    <div style="font-size: 12px; color: #888780; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Du brauchst dafür:</div>
+                    <div class="info-list">
+                        <div class="item">
+                            <i class="ti ti-id"></i>
+                            <div>
+                                <strong style="font-size: 13px;">Deine AHV-Nummer</strong>
+                                <div style="font-size: 12px; color: #888780;">Steht auf deinem AHV-Ausweis oder deiner Krankenkassenkarte</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="ti ti-mail"></i>
+                            <div>
+                                <strong style="font-size: 13px;">Eine E-Mail-Adresse</strong>
+                                <div style="font-size: 12px; color: #888780;">Für die Bestätigung deiner Anmeldung</div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="ti ti-clock"></i>
+                            <div>
+                                <strong style="font-size: 13px;">15 Minuten Zeit</strong>
+                                <div style="font-size: 12px; color: #888780;">Wir gehen das gemeinsam Schritt für Schritt durch</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <button class="primary-btn" onclick="alert('Im echten Produkt: geführter RAV-Anmelde-Wizard direkt in der App.')">
+                        <i class="ti ti-sparkles"></i> Jetzt zusammen anmelden
+                    </button>
+                    <button class="secondary-btn" onclick="goToView(6)">
+                        Ich war doch schon dort
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== VIEW 7: AGOV STATUS ===== -->
+            <div class="view" data-view="6">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="back-btn" onclick="goToView(5)"><i class="ti ti-arrow-left"></i></div>
+                    <div class="progress-dots">
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot active"></div>
+                        <div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div class="view-icon"><i class="ti ti-key"></i></div>
+                    <div class="view-title">Hast du schon ein AGOV-Konto?</div>
+                    <div class="view-subtitle">AGOV ist das schweizweite Login für Behörden – wie ein Schlüssel für viele Türen.</div>
+
+                    <div class="yesno-card" onclick="goToView(9)">
+                        <div class="head">
+                            <i class="ti ti-check"></i>
+                            <div class="t">Ja, ich habe AGOV</div>
+                        </div>
+                        <div class="d">Ich kann mich damit einloggen.</div>
+                    </div>
+
+                    <div class="yesno-card" onclick="goToView(9)">
+                        <div class="head">
+                            <i class="ti ti-x"></i>
+                            <div class="t">Nein, noch nicht</div>
+                        </div>
+                        <div class="d">Was ist das? Wie erstelle ich das?</div>
+                        <div class="help-link">
+                            <i class="ti ti-sparkles" style="font-size: 14px;"></i>
+                            Dauert nur 5 Minuten – ich zeige es dir
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ===== VIEW 10: LETTER SCAN ===== -->
+            <div class="view" data-view="9">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="view-header">
+                    <div class="back-btn" onclick="goToView(11)"><i class="ti ti-arrow-left"></i></div>
+                    <div class="progress-dots">
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+                        <div class="dot done"></div><div class="dot done"></div><div class="dot done"></div>
+                        <div class="dot done"></div><div class="dot active"></div>
+                    </div>
+                </div>
+                <div class="view-body">
+                    <div class="view-icon"><i class="ti ti-sparkles"></i></div>
+                    <div class="view-title">Ich habe deinen Brief verstanden</div>
+                    <div class="view-subtitle">Hier ist was drin steht – einfach erklärt.</div>
+
+                    <div class="scan-preview">
+                        "Sehr geehrter Herr Fremd, hiermit fordern wir Sie auf, sich zwecks Inanspruchnahme von Leistungen der Arbeitslosenversicherung bis spätestens 30.05.2026 unter Vorweisung Ihrer Personennummer 12345678 im e-Service-Portal Job-Room zu registrieren..."
+                    </div>
+
+                    <div class="scan-result">
+                        <div class="badge"><i class="ti ti-sparkles" style="font-size: 11px;"></i> Übersetzt für dich</div>
+                        <div class="text">
+                            <strong>Das RAV schreibt dir:</strong> Du musst dich bis <strong>30. Mai</strong> online im Job-Room anmelden, damit du Arbeitslosengeld bekommst.
+                        </div>
+                        <div class="extracted-data">
+                            <span class="label">Deine Nummer</span>
+                            <span class="value">12345678</span>
+                        </div>
+                        <div class="extracted-data">
+                            <span class="label">Deadline</span>
+                            <span class="value" style="color: #A32D2D;">30. Mai 2026</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #EAF3DE; border-radius: 12px; padding: 12px; display: flex; gap: 10px;">
+                        <i class="ti ti-circle-check" style="color: #3B6D11; font-size: 20px; flex-shrink: 0;"></i>
+                        <div style="font-size: 12px; color: #173404; line-height: 1.5;">
+                            <strong>Erinnerung gesetzt:</strong> Wir melden uns morgen um 10:00, damit du es nicht vergisst.
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom-bar">
+                    <button class="primary-btn" onclick="startLoading()">
+                        <i class="ti ti-check"></i> Verstanden, weiter
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== VIEW 11: LOADING / PLAN GENERATION ===== -->
+            <div class="view" data-view="10">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="loading-view">
+                    <div class="loading-spinner"></div>
+                    <h2>Ich erstelle deinen persönlichen Plan</h2>
+                    <p>Nur einen Moment – ich passe alles auf deine Situation an.</p>
+
+                    <div class="loading-tasks">
+                        <div class="loading-task" id="lt1"><i class="ti ti-circle"></i><span>Sprache eingerichtet</span></div>
+                        <div class="loading-task" id="lt2"><i class="ti ti-circle"></i><span>Situation analysiert</span></div>
+                        <div class="loading-task" id="lt3"><i class="ti ti-circle"></i><span>Plan wird erstellt</span></div>
+                        <div class="loading-task" id="lt4"><i class="ti ti-circle"></i><span>Erinnerungen werden gesetzt</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== VIEW 12: HOME ===== -->
+            <div class="view" data-view="11" id="homeView">
+                <div class="status-bar">
+                    <span class="time">9:42</span>
+                    <span class="right"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi" style="font-size: 14px;"></i><i class="ti ti-battery-3" style="font-size: 14px;"></i></span>
+                </div>
+                <div class="demo-banner">Demo-Modus · GovTech Hackathon 2026</div>
+
+                <div class="help-fab" onclick="showHelp()" title="Hilfe">
+                    <i class="ti ti-headphones" style="font-size: 18px; color: #534AB7;"></i>
+                </div>
+
+                <div class="home-content">
+                    <div class="greeting">
+                        <div class="hi">Guten Morgen,</div>
+                        <div class="name"><span id="homeName">Freddy</span> 👋</div>
+                    </div>
+
+                    <!-- Info row: voraussichtliche Zahlung -->
+                    <div class="info-row">
+                        <div class="info-tile green" id="payoutTile" style="grid-column:1/-1;">
+                            <div class="lbl">Provisorische Auszahlung</div>
+                            <div class="val">~ CHF 2'400</div>
+                            <div class="sub">Ende Juni</div>
+                        </div>
+                    </div>
+
+                    <!-- AG-Warning (transparent gemacht) -->
+                    <div class="ag-warning" id="homeAGWarning" onclick="showAGDetail()">
+                        <i class="ti ti-clock"></i>
+                        <div class="ag-content">
+                            <div class="ag-title">Wir warten auf Migros AG</div>
+                            <div class="ag-desc">Dein Ex-Arbeitgeber muss noch die Bescheinigung einreichen. Solange das fehlt, kann dein Antrag nicht entschieden werden.</div>
+                            <span class="ag-action">Details ansehen</span>
+                        </div>
+                    </div>
+
+                    <!-- Next step -->
+                    <div class="next-step" id="nextStepCard">
+            <span class="urgent">
+              <i class="ti ti-clock" style="font-size: 12px;"></i>
+              Jetzt dran
+            </span>
+                        <h3>Antrag auf Arbeitslosengeld stellen</h3>
+                        <div class="desc">Du bist beim RAV und bei AGOV registriert. Jetzt brauchen wir Angaben zu deinem letzten Job und deinen Lohnabrechnungen.</div>
+                        <button class="primary-btn" onclick="openAntrag()">
+                            <i class="ti ti-sparkles"></i> Jetzt zusammen erledigen
+                        </button>
+                    </div>
+
+                    <!-- Schritte-Übersicht (Kern) -->
+                    <div class="timeline-title">Mein nächster Schritt</div>
+
+                    <div class="timeline-title" style="margin-top:14px;color:#534AB7;">Einmalige Schritte</div>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="ti-dot ti-done"><i class="ti ti-check"></i></div>
+                            <div class="ti-content">
+                                <div class="label">RAV-Anmeldung</div>
+                                <div class="meta">Erledigt am 24. Mai</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="ti-dot ti-done"><i class="ti ti-check"></i></div>
+                            <div class="ti-content">
+                                <div class="label">AGOV-Konto erstellt</div>
+                                <div class="meta">Erledigt am 25. Mai</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item" onclick="openAntrag()" style="cursor: pointer;">
+                            <div class="ti-dot ti-now" id="tlAntragDot"><i class="ti ti-edit"></i></div>
+                            <div class="ti-content">
+                                <div class="label">Antrag stellen</div>
+                                <div class="meta now" id="tlAntragMeta">Jetzt dran</div>
+                            </div>
+                            <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                        </div>
+                        <div class="timeline-item" id="tlAGItem" onclick="showAGDetail()" style="cursor: pointer;">
+                            <div class="ti-dot ti-waiting" id="tlAGDot"><i class="ti ti-clock"></i></div>
+                            <div class="ti-content">
+                                <div class="label">Arbeitgeber-Bescheinigung</div>
+                                <div class="meta warning" id="tlAGMeta">Wartet auf Migros AG</div>
+                            </div>
+                            <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                        </div>
+                    </div>
+
+                    <div class="timeline-title" style="margin-top:16px;color:#185FA5;">Monatlich</div>
+                    <div class="timeline">
+                        <div class="timeline-item" onclick="openAVP()" style="cursor: pointer;">
+                            <div class="ti-dot ti-month" id="tlAvpDot"><i class="ti ti-repeat"></i></div>
+                            <div class="ti-content">
+                                <div class="label">AVP-Meldung</div>
+                                <div class="meta" id="tlAvpMeta">Angaben der versicherten Person</div>
+                            </div>
+                            <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                        </div>
+                        <div class="timeline-item" onclick="openBemueh()" style="cursor: pointer;">
+                            <div class="ti-dot ti-month"><i class="ti ti-repeat"></i></div>
+                            <div class="ti-content">
+                                <div class="label">Arbeitsbemühungen</div>
+                                <div class="meta">Monatlich nachweisen · 2 von 4 erfasst</div>
+                            </div>
+                            <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                        </div>
+                    </div>
+
+                    <div style="height: 90px;"></div>
+                </div>
+
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <i class="ti ti-home"></i>
+                        <span>Start</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="ti ti-list-check"></i>
+                        <span>Aufgaben</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="ti ti-folder"></i>
+                        <span>Dossier</span>
+                    </div>
+                    <div class="nav-item">
+                        <i class="ti ti-user"></i>
+                        <span>Profil</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ANTRAGSANSICHT ===== -->
+            <div class="antrag-screen" id="antragScreen">
+                <div class="a-header">
+                    <div class="back-btn" onclick="closeAntrag()"><i class="ti ti-arrow-left"></i></div>
+                    <h2>Antrag Arbeitslosengeld</h2>
+                </div>
+
+                <div class="mode-toggle">
+                    <button id="am-view" class="active" onclick="setAntragMode('view')"><i class="ti ti-eye"></i> Ansicht</button>
+                    <button id="am-edit" onclick="setAntragMode('edit')"><i class="ti ti-edit"></i> Bearbeiten</button>
+                </div>
+
+                <!-- VIEW MODE -->
+                <div class="a-sub active" id="antrag-view">
+                    <div class="a-content">
+                        <div class="status-banner-a" id="antragStatusBanner">
+                            <i class="ti ti-search"></i>
+                            <div class="sb-text">
+                                <div class="sb-title">In Prüfung bei Unia Bern</div>
+                                <div class="sb-sub">Eingereicht am 17. Mai 2026</div>
+                            </div>
+                            <span class="pill progress"><span class="d"></span>In Prüfung</span>
+                        </div>
+                        <div id="antragMappingHint"></div>
+
+                        <!-- Meine Dokumente (einklappbar, datengetrieben) -->
+                        <div class="docs-head" id="docsHead" onclick="toggleVSec(this)" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:18px 0 4px;">
+                            <div style="flex:1;font-size:15px;font-weight:500;">Meine Dokumente</div>
+                            <span id="docCount" style="font-size:11px;color:#888780;">2 hochgeladen · 4 offen</span>
+                            <i class="ti ti-chevron-right chev2" style="color:#888780;"></i>
+                        </div>
+                        <div id="docBody" style="display:none;">
+                            <button onclick="triggerDocUpload()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;margin:4px 0 10px;background:#EEEDFE;color:#534AB7;border:1px dashed #534AB7;border-radius:12px;font-size:13px;font-weight:500;cursor:pointer;"><i class="ti ti-upload"></i> Dokumente hochladen (Foto/PDF, mehrere möglich)</button>
+                            <div id="docList"></div>
+                            <input type="file" id="docFileInput" accept="image/*,application/pdf" multiple style="display:none;">
+                        </div>
+
+                        <!-- Antragsdaten (gruppiert, eingeklappt – grösstenteils vorausgefüllt) -->
+                        <div class="section-title">Antragsdaten</div>
+                        <div id="antragViewCards"></div>
+
+                        <!-- Arbeitgeberbescheinigung als EIGENER Abschnitt -->
+                        <div class="section-title">Arbeitgeberbescheinigung</div>
+                        <div class="ag-section" id="agSectionView">
+                            <div class="ag-sec-head" onclick="toggleAGSec(this)" style="cursor:pointer;">
+                                <i class="ti ti-clock"></i>
+                                <div class="ag-sec-title">Bescheinigung von Migros AG</div>
+                                <span class="pill missing"><span class="d"></span>Fehlt</span>
+                                <button class="vedit" style="background:#FAC775;color:#633806;margin-left:6px;" onclick="event.stopPropagation(); aEditStep('agbesch')" title="Im Antrag ansehen"><i class="ti ti-arrow-right"></i></button>
+                                <i class="ti ti-chevron-down ag-chev" style="color:#BA7517;font-size:16px;"></i>
+                            </div>
+                            <div class="ag-sec-body">
+                                <div class="ag-sec-desc" style="margin-top:6px;">Dieser Abschnitt des Antrags muss von deinem Ex-Arbeitgeber ausgefüllt werden (Lohn, Kündigungsgrund, Anstellungsdauer). Solange er fehlt, kann die ALK nicht entscheiden. Migros AG ist seit 6 Tagen überfällig.</div>
+                                <button class="ag-sec-btn" onclick="event.stopPropagation(); agReminderAntrag()"><i class="ti ti-bell" style="font-size:14px;"></i> Migros AG erinnern</button>
+                            </div>
+                        </div>
+
+                        <!-- Eingang ALK -->
+                        <div id="alkEingangSection">
+                            <div class="section-title">Eingang – Dokumente von der ALK</div>
+                            <div class="docrow incoming">
+                                <i class="ti ti-file-download"></i>
+                                <div class="info"><div class="name">Notwendige Schritte zur Abklärung</div><div class="meta">Von Unia Bern · 19.02.2026 · Fehlende Information</div></div>
+                                <i class="ti ti-chevron-right" style="color:#185FA5;"></i>
+                            </div>
+                            <div style="background:#E6F1FB;border-radius:12px;padding:12px;margin-top:8px;display:flex;gap:10px;">
+                                <i class="ti ti-info-circle" style="color:#185FA5;font-size:18px;flex-shrink:0;"></i>
+                                <div style="font-size:12px;color:#0C447C;line-height:1.5;">Die ALK schickt dir hier Nachfragen und Dokumente. Wir übersetzen sie automatisch in deine Sprache.</div>
+                            </div>
+                        </div>
+
+                        <div style="height: 80px;"></div>
+                    </div>
+                    <div class="a-bottom">
+                        <button class="ghost-btn" onclick="showToastV('Antrag als PDF heruntergeladen')"><i class="ti ti-download"></i></button>
+                        <button class="primary-btn" id="agViewBottomBtn" onclick="agReminderAntrag()"><i class="ti ti-bell"></i> Migros AG erinnern</button>
+                    </div>
+                </div>
+
+                <!-- EDIT MODE (schema-getriebener Stepper, Formular 10000d) -->
+                <div class="a-sub" id="antrag-edit">
+                    <div style="padding:0 20px 8px;flex-shrink:0;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#888780;margin-bottom:6px;">
+                            <span id="aCounter">Schritt 1 von 13</span><span id="aPct">8%</span>
+                        </div>
+                        <div class="a-prog" style="margin:0;"><div class="fill" id="aFill" style="width:8%"></div></div>
+                    </div>
+                    <div class="a-content" id="aEditContent"></div>
+                    <div class="a-bottom">
+                        <button class="ghost-btn" id="aPrev" onclick="aPrevSection()"><i class="ti ti-arrow-left"></i></button>
+                        <button class="primary-btn" id="aNext" onclick="aNextSection()"><span id="aNextLabel">Weiter</span> <i class="ti ti-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ARBEITSBEMÜHUNGEN-SCREEN (Formular 716.007, pro Monat) ===== -->
+            <div class="antrag-screen" id="bemuehScreen">
+                <div class="a-header">
+                    <div class="back-btn" onclick="closeBemueh()"><i class="ti ti-arrow-left"></i></div>
+                    <h2>Arbeitsbemühungen</h2>
+                </div>
+
+                <div class="bm-month">
+                    <button class="bm-nav" onclick="bmStepMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+                    <div class="bm-month-mid">
+                        <div class="bm-month-label" id="bmMonthLabel">Mai 2026</div>
+                        <div class="bm-month-sub" id="bmMonthSub">einzureichen bis 5. Juni</div>
+                    </div>
+                    <button class="bm-nav" onclick="bmStepMonth(1)"><i class="ti ti-chevron-right"></i></button>
+                </div>
+
+                <div class="mode-toggle">
+                    <button id="bm-view" class="active" onclick="setBemMode('view')"><i class="ti ti-eye"></i> Ansicht</button>
+                    <button id="bm-edit" onclick="setBemMode('edit')"><i class="ti ti-edit"></i> Bearbeiten</button>
+                </div>
+
+                <div class="a-sub active" id="bemueh-view">
+                    <div class="a-content" id="bmViewContent"></div>
+                    <div class="a-bottom">
+                        <button class="ghost-btn" onclick="showToastV('Nachweis als PDF heruntergeladen')"><i class="ti ti-download"></i></button>
+                        <button class="primary-btn" onclick="setBemMode('edit')"><i class="ti ti-edit"></i> Bearbeiten</button>
+                    </div>
+                </div>
+
+                <div class="a-sub" id="bemueh-edit">
+                    <div class="a-content" id="bmEditContent"></div>
+                    <div class="a-bottom">
+                        <button class="ghost-btn" onclick="setBemMode('view')">Fertig</button>
+                        <button class="primary-btn" onclick="bmAddEntry()"><i class="ti ti-plus"></i> Bewerbung</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== AVP-SCREEN (Angaben der versicherten Person, pro Monat) ===== -->
+            <div class="antrag-screen" id="avpScreen">
+                <div class="a-header">
+                    <div class="back-btn" onclick="closeAVP()"><i class="ti ti-arrow-left"></i></div>
+                    <h2>AVP-Meldung</h2>
+                </div>
+
+                <div class="bm-month">
+                    <button class="bm-nav" onclick="avpStepMonth(-1)"><i class="ti ti-chevron-left"></i></button>
+                    <div class="bm-month-mid">
+                        <div class="bm-month-label" id="avpMonthLabel">Mai 2026</div>
+                        <div class="bm-month-sub" id="avpMonthSub">einzureichen bis 30. Juni</div>
+                    </div>
+                    <button class="bm-nav" onclick="avpStepMonth(1)"><i class="ti ti-chevron-right"></i></button>
+                </div>
+
+                <div class="mode-toggle">
+                    <button id="avpTabView" class="active" onclick="setAvpMode('view')"><i class="ti ti-eye"></i> Ansicht</button>
+                    <button id="avpTabEdit" onclick="setAvpMode('edit')"><i class="ti ti-edit"></i> Bearbeiten</button>
+                </div>
+
+                <div class="a-sub active" id="avp-view">
+                    <div class="a-content" id="avpViewContent"></div>
+                    <div class="a-bottom">
+                        <button class="ghost-btn" onclick="showToastV('AVP als PDF heruntergeladen')"><i class="ti ti-download"></i></button>
+                        <button class="primary-btn" onclick="setAvpMode('edit')"><i class="ti ti-edit"></i> Bearbeiten</button>
+                    </div>
+                </div>
+
+                <div class="a-sub" id="avp-edit">
+                    <div class="a-content" id="avpEditContent"></div>
+                    <div class="a-bottom">
+                        <button class="ghost-btn" onclick="setAvpMode('view')">Fertig</button>
+                        <button class="primary-btn" onclick="avpSubmit()"><i class="ti ti-send"></i> Übermitteln</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MODAL: HELP ===== -->
+            <div class="overlay" id="helpOverlay">
+                <div class="sheet">
+                    <div class="sheet-handle"></div>
+                    <h2 style="font-size: 20px; font-weight: 500; margin-bottom: 6px;">Hilfe holen</h2>
+                    <p style="font-size: 13px; color: #888780; margin-bottom: 16px;">Du musst das nicht alleine machen. Wir verbinden dich mit echten Menschen.</p>
+
+                    <div class="contact-card" onclick="alert('Im echten Produkt: Direkte Verbindung zum RAV-Berater.')">
+                        <div class="ico"><i class="ti ti-headphones"></i></div>
+                        <div class="info">
+                            <div class="t">Mit RAV-Berater sprechen</div>
+                            <div class="s">In deiner Sprache · Heute verfügbar</div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                    </div>
+
+                    <div class="contact-card" onclick="alert('Im echten Produkt: Übersetzer-Hotline (HEKS / Caritas).')">
+                        <div class="ico"><i class="ti ti-language"></i></div>
+                        <div class="info">
+                            <div class="t">Übersetzer-Hotline</div>
+                            <div class="s">Tigrinya, Arabisch, Ukrainisch, etc.</div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                    </div>
+
+                    <div class="contact-card" onclick="alert('Im echten Produkt: Live-Chat mit Sprachunterstützung.')">
+                        <div class="ico"><i class="ti ti-message-circle-2"></i></div>
+                        <div class="info">
+                            <div class="t">Live-Chat</div>
+                            <div class="s">Sofortige Antwort · Mo-Fr 8-17h</div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                    </div>
+
+                    <div class="contact-card" onclick="alert('Im echten Produkt: Standort des nächsten RAV-Büros.')">
+                        <div class="ico"><i class="ti ti-map-pin"></i></div>
+                        <div class="info">
+                            <div class="t">RAV in deiner Nähe</div>
+                            <div class="s">Persönlich vorbeigehen</div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                    </div>
+
+                    <button class="text-btn" style="width: 100%; margin-top: 12px;" onclick="closeOverlays()">
+                        Zurück
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== MODAL: EMERGENCY ===== -->
+            <div class="overlay" id="emergencyOverlay">
+                <div class="sheet">
+                    <div class="sheet-handle"></div>
+                    <h2 style="font-size: 20px; font-weight: 500; margin-bottom: 6px;">Brauchst du sofort Geld?</h2>
+                    <p style="font-size: 13px; color: #888780; margin-bottom: 16px;">Bis das Arbeitslosengeld kommt, kann es dauern. Hier sind sofortige Hilfen.</p>
+
+                    <div class="emergency-card">
+                        <div class="title"><i class="ti ti-alert-triangle"></i> Akute Notlage</div>
+                        <p>Falls du heute weder Essen noch ein Dach über dem Kopf hast, ruf die Soziale Notfall-Hotline: <strong>031 633 76 76</strong></p>
+                    </div>
+
+                    <div class="contact-card" onclick="alert('Im echten Produkt: Sozialdienst-Verzeichnis.')">
+                        <div class="ico"><i class="ti ti-heart-handshake"></i></div>
+                        <div class="info">
+                            <div class="t">Sozialhilfe beantragen</div>
+                            <div class="s">Überbrückung bis ALV-Zahlung</div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                    </div>
+
+                    <div class="contact-card" onclick="alert('Im echten Produkt: Caritas / HEKS in der Nähe.')">
+                        <div class="ico"><i class="ti ti-shopping-bag"></i></div>
+                        <div class="info">
+                            <div class="t">Essens-Hilfe in deiner Nähe</div>
+                            <div class="s">Caritas, HEKS, Tischlein deck dich</div>
+                        </div>
+                        <i class="ti ti-chevron-right" style="color: #888780;"></i>
+                    </div>
+
+                    <button class="text-btn" style="width: 100%; margin-top: 12px;" onclick="closeOverlays()">
+                        Zurück
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== MODAL: SANCTION STATUS ===== -->
+            <div class="overlay" id="sanctionOverlay">
+                <div class="sheet">
+                    <div class="sheet-handle"></div>
+                    <h2 style="font-size: 20px; font-weight: 500; margin-bottom: 6px;">Dein Sanktionsrisiko</h2>
+                    <p style="font-size: 13px; color: #888780; margin-bottom: 16px;">So sieht es aus für die nächsten Wochen.</p>
+
+                    <div style="background: #EAF3DE; border-radius: 14px; padding: 18px; margin-bottom: 14px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: #3B6D11; color: white; display: flex; align-items: center; justify-content: center;"><i class="ti ti-shield-check" style="font-size: 22px;"></i></div>
+                            <div>
+                                <div style="font-size: 11px; color: #173404; text-transform: uppercase; letter-spacing: 0.5px;">Aktueller Status</div>
+                                <div style="font-size: 16px; font-weight: 500; color: #173404;">Niedriges Risiko</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 12px; color: #173404; line-height: 1.5;">Du bist auf Kurs. Wir erinnern dich rechtzeitig an alle Deadlines.</p>
+                    </div>
+
+                    <div style="font-size: 12px; color: #888780; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Deine nächsten Deadlines</div>
+
+                    <div class="contact-card" style="cursor: default;">
+                        <div class="ico" style="background: #FCEBEB; color: #A32D2D;"><i class="ti ti-calendar-event"></i></div>
+                        <div class="info">
+                            <div class="t">Antrag einreichen</div>
+                            <div class="s" style="color: #A32D2D;">In 2 Tagen · 30. Mai</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-card" style="cursor: default;">
+                        <div class="ico"><i class="ti ti-calendar"></i></div>
+                        <div class="info">
+                            <div class="t">Erste Arbeitsbemühungen</div>
+                            <div class="s">In 33 Tagen · 30. Juni</div>
+                        </div>
+                    </div>
+
+                    <div class="contact-card" style="cursor: default;">
+                        <div class="ico"><i class="ti ti-calendar"></i></div>
+                        <div class="info">
+                            <div class="t">AvP-Formular einreichen</div>
+                            <div class="s">In 38 Tagen · 5. Juli</div>
+                        </div>
+                    </div>
+
+                    <button class="text-btn" style="width: 100%; margin-top: 12px;" onclick="closeOverlays()">
+                        Schliessen
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== MODAL: AG DETAIL ===== -->
+            <div class="overlay" id="agOverlay">
+                <div class="sheet">
+                    <div class="sheet-handle"></div>
+                    <h2 style="font-size: 20px; font-weight: 500; margin-bottom: 6px;">Wer arbeitet an deinem Antrag</h2>
+                    <p style="font-size: 13px; color: #888780; margin-bottom: 16px;">Damit du verstehst, wo es gerade hakt.</p>
+
+                    <div class="actor-card">
+                        <div class="ac-head">
+                            <div class="ac-avatar">F</div>
+                            <div style="flex: 1;">
+                                <div class="ac-name">Du (Freddy)</div>
+                                <div class="ac-role">Antragsteller</div>
+                            </div>
+                            <span class="status done"><span class="d"></span>Erledigt</span>
+                        </div>
+                        <div class="ac-desc">Du hast alles eingereicht. Sehr gut!</div>
+                    </div>
+
+                    <div class="actor-card waiting" id="agModalMigros">
+                        <div class="ac-head">
+                            <div class="ac-avatar warning">M</div>
+                            <div style="flex: 1;">
+                                <div class="ac-name">Migros AG</div>
+                                <div class="ac-role">Ex-Arbeitgeber</div>
+                            </div>
+                            <span class="status waiting-ag"><span class="d"></span>Überfällig</span>
+                        </div>
+                        <div class="ac-desc warning">Migros AG hat seit 6 Tagen nicht reagiert. Die Arbeitgeberbescheinigung fehlt – ohne sie kann die ALK nicht entscheiden.</div>
+                        <button class="primary-btn" style="font-size: 13px; padding: 10px;" onclick="agReminder()">
+                            <i class="ti ti-bell" style="font-size: 16px;"></i> Migros AG erinnern
+                        </button>
+                    </div>
+
+                    <div class="actor-card">
+                        <div class="ac-head">
+                            <div class="ac-avatar">A</div>
+                            <div style="flex: 1;">
+                                <div class="ac-name">Unia Bern</div>
+                                <div class="ac-role">Arbeitslosenkasse</div>
+                            </div>
+                            <span class="status" style="background: #F1EFE8; color: #5F5E5A;"><span class="d" style="background: #888780;"></span>Wartet</span>
+                        </div>
+                        <div class="ac-desc">Die ALK kann erst prüfen, wenn alle Unterlagen vorliegen – auch die Bescheinigung von Migros AG.</div>
+                    </div>
+
+                    <button class="text-btn" style="width: 100%; margin-top: 12px;" onclick="closeOverlays()">
+                        Schliessen
+                    </button>
+                </div>
+            </div>
+
+            <div class="toast" id="toast" style="position:absolute;bottom:90px;left:20px;right:20px;background:#173404;color:white;padding:12px 14px;border-radius:10px;font-size:13px;display:none;align-items:center;gap:8px;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+                <i class="ti ti-check"></i><span id="toastMsg">Gespeichert</span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== VIEW NAVIGATION =====
+    // Explizite Flow-Reihenfolge [data-view, Label] – entkoppelt von der data-view-Nummer
+    const viewSeq = [
+        [0, 'Splash / Welcome'],
+        [1, 'Sprachauswahl'],
+        [3, 'Situation klären'],
+        [12, 'Arbeitslosengeld beantragen'],
+        [13, 'RAV-Verifikation (Login)'],
+        [10, 'Plan-Generierung'],
+        [11, 'Home-Screen']
+    ];
+
+    const viewList = document.getElementById('viewList');
+    viewSeq.forEach(([idx, label], n) => {
+        const btn = document.createElement('button');
+        btn.className = 'view-jump';
+        btn.dataset.idx = idx;
+        btn.innerHTML = `<span class="num">${n + 1}</span> ${label}`;
+        btn.onclick = () => goToView(idx);
+        viewList.appendChild(btn);
+    });
+
+    function goToView(idx) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.view-jump').forEach(b => b.classList.remove('active'));
+        const antrag = document.getElementById('antragScreen');
+        if (antrag) antrag.classList.remove('active');
+        const bem = document.getElementById('bemuehScreen');
+        if (bem) bem.classList.remove('active');
+        const avp = document.getElementById('avpScreen');
+        if (avp) avp.classList.remove('active');
+        const target = document.querySelector(`[data-view="${idx}"]`);
+        if (target) target.classList.add('active');
+        const btn = document.querySelector(`[data-idx="${idx}"]`);
+        if (btn) btn.classList.add('active');
+        closeOverlays();
+        if (idx === 10) runLoadingAnimation();
+    }
+
+    document.querySelector('[data-idx="0"]').classList.add('active');
+
+    // ===== i18n (Deutsch + Tigrinya) – Onboarding-Screens =====
+    // HINWEIS: Tigrinya-Übersetzungen sind ein erster Entwurf und sollten
+    // von einer/einem Muttersprachler:in geprüft werden.
+    const I18N = {
+        de: {
+            splash_tagline: "Dein Begleiter durch die Arbeitslosigkeit – einfach, klar, in deiner Sprache.",
+            splash_start: "Los geht's",
+            splash_trust: "Sicher · Kostenlos · Vom Kanton Bern",
+            lang_title: "Welche Sprache sprichst du?",
+            lang_sub: "Wir erklären dir alles in deiner Muttersprache. Du kannst sie später jederzeit ändern.",
+            weiter: "Weiter",
+            situation_title: "Wie ist deine Situation, Freddy?",
+            situation_sub: "Wähle was am besten passt. Wir erstellen dir danach einen persönlichen Plan.",
+            opt1_t: "Ich habe meinen Job verloren",
+            opt1_d: "Mein letzter Arbeitstag ist bereits vorbei",
+            opt2_t: "Ich habe die Kündigung erhalten",
+            opt2_d: "Ich arbeite noch, aber bald nicht mehr",
+            opt3_t: "Arbeitslosigkeit droht",
+            opt3_d: "Ich vermute, dass ich bald gekündigt werde",
+            opt4_t: "Etwas anderes",
+            opt4_d: "Z.B. Wiedereinstieg, Ausgesteuert"
+        },
+        ti: {
+            splash_tagline: "ኣብ እዋን ስእነት ስራሕ ዘሰንየካ መሓዝ – ቀሊል፡ ንጹር፡ ብቋንቋኻ።",
+            splash_start: "ንጀምር",
+            splash_trust: "ውሑስ · ብነጻ · ካብ ካንቶን በርን",
+            lang_title: "ኣየናይ ቋንቋ ትዛረብ?",
+            lang_sub: "ኩሉ ነገር ብቋንቋ ኣዴኻ ክንገልጸልካ ኢና። ጸኒሕካ ኣብ ዝኾነ እዋን ክትቕይሮ ትኽእል ኢኻ።",
+            weiter: "ቀጽል",
+            situation_title: "ኩነታትካ ከመይ ኣሎ፡ ፍረዲ?",
+            situation_sub: "እቲ ዝሰማማዕ ምረጽ። ድሕሪኡ ውልቃዊ መደብ ክንሰርሓልካ ኢና።",
+            opt1_t: "ስራሐይ ስኢነ",
+            opt1_d: "ናይ መወዳእታ መዓልቲ ስራሐይ ሓሊፉ እዩ",
+            opt2_t: "ናይ ስራሕ ምቁራጽ ደብዳበ ተቐቢለ",
+            opt2_d: "ሕጂ እሰርሕ ኣለኹ፡ ግን ኣብ ቀረባ እዋን ክሓድግ እየ",
+            opt3_t: "ስእነት ስራሕ የንጸላሉ ኣሎ",
+            opt3_d: "ኣብ ቀረባ እዋን ካብ ስራሕ ክስጎ ይኽእል እየ ኢለ እጥርጥር",
+            opt4_t: "ካልእ ነገር",
+            opt4_d: "ንኣብነት፡ ናብ ስራሕ ምምላስ፡ ድጎማ ዘብቅዐ"
+        }
+    };
+    let currentLang = 'de';
+    function t(key) {
+        const d = I18N[currentLang];
+        if (d && d[key] != null) return d[key];
+        return (I18N.de[key] != null) ? I18N.de[key] : null;
+    }
+    function applyI18n() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const val = t(el.getAttribute('data-i18n'));
+            if (val != null) el.textContent = val;
+        });
+        // Tigrinya nutzt teils andere Schriftrichtung/Schrift – hier nur Sprachkennzeichnung
+        document.documentElement.lang = currentLang;
+    }
+
+    function selectLang(el, code) {
+        document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('lang-next').disabled = false;
+        // Aktuell sind Deutsch + Tigrinya hinterlegt; andere Sprachen fallen auf Deutsch zurück
+        currentLang = I18N[code] ? code : 'de';
+        applyI18n();
+    }
+
+    function checkName() {
+        const v = document.getElementById('nameInput').value.trim();
+        document.getElementById('name-next').disabled = v.length < 2;
+    }
+    function confirmName() {
+        const v = document.getElementById('nameInput').value.trim() || 'Freddy';
+        document.getElementById('greetName').textContent = v;
+        document.getElementById('homeName').textContent = v;
+        goToView(3);
+    }
+
+    function selectSituation(el) {
+        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('situation-next').disabled = false;
+    }
+
+    function selectALK(el) {
+        document.querySelectorAll('#alkList .option-card').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function magicLogin() {
+        const b = document.getElementById('magicBtn');
+        b.innerHTML = '<i class="ti ti-loader-2"></i> Anmeldung läuft …';
+        b.disabled = true;
+        setTimeout(() => {
+            document.getElementById('magicStart').style.display = 'none';
+            document.getElementById('magicDone').style.display = 'block';
+            document.getElementById('magicNext').style.display = 'flex';
+        }, 1300);
+    }
+
+    function startLoading() { goToView(10); }
+
+    function runLoadingAnimation() {
+        const tasks = ['lt1', 'lt2', 'lt3', 'lt4'];
+        tasks.forEach((id) => {
+            const el = document.getElementById(id);
+            el.classList.remove('done');
+            el.querySelector('i').className = 'ti ti-circle';
+        });
+        tasks.forEach((id, i) => {
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                el.classList.add('done');
+                el.querySelector('i').className = 'ti ti-circle-check-filled';
+            }, 500 + i * 600);
+        });
+        setTimeout(() => goToView(11), 3300);
+    }
+
+    function showHelp() { document.getElementById('helpOverlay').classList.add('show'); }
+    function showEmergency() { document.getElementById('emergencyOverlay').classList.add('show'); }
+    function showSanction() { document.getElementById('sanctionOverlay').classList.add('show'); }
+    function showAGDetail() {
+        // If we're not on home, jump there first so the modal makes sense
+        if (!document.querySelector('[data-view="11"]').classList.contains('active')) {
+            goToView(11);
+        }
+        document.getElementById('agOverlay').classList.add('show');
+    }
+    function closeOverlays() {
+        document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
+    }
+
+    function agReminder() {
+        const emp = (aState.agName || '').trim() || 'den Arbeitgeber';
+        closeOverlays();
+        setTimeout(() => alert('Erinnerung an ' + emp + ' gesendet. Wir benachrichtigen dich, sobald sie antworten.'), 100);
+    }
+
+    document.querySelectorAll('.overlay').forEach(o => {
+        o.addEventListener('click', (e) => { if (e.target === o) closeOverlays(); });
+    });
+
+    function updateClocks() {
+        const now = new Date();
+        const t = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        document.querySelectorAll('.time').forEach(el => el.textContent = t);
+    }
+    updateClocks();
+    setInterval(updateClocks, 30000);
+
+    // Deutsch als Standard vorauswählen (erste lang-card)
+    const deCard = document.querySelector('.lang-card');
+    if (deCard) selectLang(deCard, 'de');
+
+    // ===== ANTRAGSANSICHT =====
+    function openAntrag() {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('antragScreen').classList.add('active');
+        setAntragMode('view');
+        closeOverlays();
+    }
+    function closeAntrag() {
+        document.getElementById('antragScreen').classList.remove('active');
+        goToView(11);
+    }
+    function setAntragMode(mode) {
+        document.getElementById('antrag-view').classList.toggle('active', mode === 'view');
+        document.getElementById('antrag-edit').classList.toggle('active', mode === 'edit');
+        document.getElementById('am-view').classList.toggle('active', mode === 'view');
+        document.getElementById('am-edit').classList.toggle('active', mode === 'edit');
+        if (mode === 'edit') { aCur = 0; renderAEdit(); }
+        else { renderAntragView(); }
+    }
+    function toggleVSec(el) {
+        const body = el.nextElementSibling;
+        const chev = el.querySelector('.chev2');
+        const hidden = body.style.display === 'none';
+        body.style.display = hidden ? 'block' : 'none';
+        if (chev) chev.className = hidden ? 'ti ti-chevron-down chev2' : 'ti ti-chevron-right chev2';
+    }
+    function toggleAGSec(el) {
+        const body = el.nextElementSibling;
+        const chev = el.querySelector('.ag-chev');
+        const hidden = body.style.display === 'none';
+        body.style.display = hidden ? 'block' : 'none';
+        if (chev) chev.className = hidden ? 'ti ti-chevron-down ag-chev' : 'ti ti-chevron-right ag-chev';
+    }
+    function agReminderAntrag() { showToastV('Erinnerung an ' + ((aState.agName||'').trim() || 'den Arbeitgeber') + ' gesendet'); }
+
+    // ===== Dokumente + KI-Mehrfach-Upload (Demo) =====
+    // docs = bereits hochgeladene Dokumente. Claude erkennt den Typ je Datei.
+    const docInitial = [
+        { id:'kuend', name:'Kündigungsschreiben.pdf', docType:'Kündigungsschreiben', icon:'ti-file-type-pdf', meta:'Von dir · 15. Mai' },
+        { id:'lohn', name:'Lohnabrechnungen Q1.pdf', docType:'Lohnabrechnung', icon:'ti-file-type-pdf', meta:'Von dir · 15. Mai' }
+    ];
+    let docs = JSON.parse(JSON.stringify(docInitial));
+
+    function docIcon(dt) {
+        const t = (dt||'').toLowerCase();
+        if (t.includes('bescheinigung')) return 'ti-file-check';
+        if (t.includes('vertrag')) return 'ti-file-text';
+        if (t.includes('lohn')) return 'ti-file-dollar';
+        if (t.includes('künd') || t.includes('kuend')) return 'ti-file-x';
+        if (t.includes('lebenslauf') || t.includes('cv')) return 'ti-file-cv';
+        if (t.includes('zeugnis')) return 'ti-certificate';
+        if (t.includes('diplom')) return 'ti-school';
+        return 'ti-file-type-pdf';
+    }
+
+    function renderDocList() {
+        const cont = document.getElementById('docList'); if (!cont) return;
+        const cnt = document.getElementById('docCount'); if (cnt) cnt.textContent = `${docs.length} hochgeladen`;
+        // Bei keinen Dokumenten die Sektion automatisch öffnen
+        const body = document.getElementById('docBody'), head = document.getElementById('docsHead');
+        if (!docs.length && body && head) {
+            body.style.display = 'block';
+            const chev = head.querySelector('.chev2'); if (chev) chev.className = 'ti ti-chevron-down chev2';
+        }
+        if (!docs.length) {
+            cont.innerHTML = `<div style="font-size:12px;color:#888780;padding:10px 4px;line-height:1.5;">Noch keine Dokumente. Lade Fotos oder PDFs hoch – der Dokumenttyp wird automatisch erkannt und passende Felder werden ausgefüllt.</div>`;
+            return;
+        }
+        cont.innerHTML = docs.map(d =>
+            `<div class="docrow"><i class="ti ${d.icon||'ti-file-type-pdf'}"></i><div class="info"><div class="name">${d.name}</div><div class="meta">${d.meta||''}</div></div><i class="ti ti-check check"></i></div>`
+        ).join('');
+    }
+
+    function triggerDocUpload() {
+        const inp = document.getElementById('docFileInput');
+        if (!inp) return;
+        inp.value = '';
+        inp.click();
+    }
+
+    // Datei(en) gewählt -> nacheinander analysieren
+    document.addEventListener('change', (e) => {
+        if (e.target && e.target.id === 'docFileInput' && e.target.files.length) {
+            handleDocFiles(Array.from(e.target.files));
+        }
+    });
+
+    async function handleDocFiles(files) {
+        let totalFields = 0;
+        let certSubmitted = false;
+        for (const file of files) {
+            showToastV('Dokument wird analysiert: ' + (file.name || 'Datei') + ' …');
+            const result = await analyzeDocument(file, { docType: null }); // Typ wird automatisch erkannt
+            const dt = result.docType || 'Dokument';
+            docs.push({ id: 'u' + Date.now() + Math.random().toString(36).slice(2, 6), name: file.name || dt, docType: dt, icon: docIcon(dt), meta: dt });
+            renderDocList();
+            if (result.extracts) {
+                for (const k in result.extracts) {
+                    if (Object.prototype.hasOwnProperty.call(aState, k) && result.extracts[k] != null && result.extracts[k] !== '') {
+                        aState[k] = result.extracts[k]; aFilled.add(k); aDocFilled.add(k); totalFields++;
+                    }
+                }
+            }
+            // Arbeitgeberbescheinigung erkannt → Bescheinigung gilt als eingereicht
+            if (/bescheinigung/i.test(dt)) {
+                certSubmitted = true;
+                if (result.extracts && result.extracts.agName) { aState.agName = result.extracts.agName; aFilled.add('agName'); }
+            }
+        }
+        if (certSubmitted) agDone = true;
+        renderAntragView();
+        renderAEdit();
+        if (certSubmitted) showToastV('✓ Arbeitgeberbescheinigung erkannt – Status auf „eingereicht" gesetzt');
+        else if (totalFields) showToastV(`✓ ${files.length} Dokument(e) erkannt – ${totalFields} Felder automatisch ausgefüllt`);
+        else showToastV(`✓ ${files.length} Dokument(e) erkannt und gespeichert`);
+    }
+
+    // Demo-Fallback: Typ + Extrakte anhand des Dateinamens raten (falls API offline)
+    function demoGuess(filename) {
+        const n = (filename || '').toLowerCase();
+        if (n.includes('bescheinigung')) return { docType:'Arbeitgeberbescheinigung', extracts:{ agName:'Logistikzentrum Muster AG' } };
+        if (n.includes('vertrag')) return { docType:'Arbeitsvertrag', extracts:{ agName:'Migros AG', agOrt:'3027 Bern', form:'Vollzeitbeschäftigung', iban:'CH93 0076 2011 6238 5295 7' } };
+        if (n.includes('lohn')) return { docType:'Lohnabrechnung', extracts:{ iban:'CH93 0076 2011 6238 5295 7', grad:'100' } };
+        if (n.includes('künd') || n.includes('kuend')) return { docType:'Kündigungsschreiben', extracts:{ letzterTag:'31.05.2026' } };
+        if (n.includes('lebenslauf') || n.includes('cv')) return { docType:'Lebenslauf', extracts:null };
+        if (n.includes('zeugnis')) return { docType:'Arbeitszeugnis', extracts:null };
+        return { docType:'Dokument', extracts:null };
+    }
+
+    // Formular-Schema (Schlüssel: Bedeutung) aus aSchema ableiten – wird der API mitgegeben
+    function aFieldSchema() {
+        const out = {};
+        aSchema.forEach(s => (s.fields || []).forEach(f => {
+            if (f.key && f.type !== 'info' && f.type !== 'review') out[f.key] = f.label || f.key;
+        }));
+        return out;
+    }
+
+    function fileToBase64(file) {
+        return new Promise((res, rej) => {
+            const r = new FileReader();
+            r.onload = () => res(String(r.result).split(',')[1]);
+            r.onerror = () => rej(new Error('read failed'));
+            r.readAsDataURL(file);
+        });
+    }
+
+    // ===========================================================================
+    // NOTES – Dokumentenerkennung via Claude-API (NUR FÜR DIE DEMO / HACKATHON)
+    // ---------------------------------------------------------------------------
+    // Diese Integration ist ausschliesslich für die Demo gedacht.
+    // WICHTIG: In Produktion NIEMALS einen API-Key im Browser-Code ablegen –
+    // jeder, der die Seite öffnet, könnte ihn auslesen. Stattdessen einen
+    // Backend-Proxy verwenden, der den Key serverseitig hält.
+    //
+    // Für eine rein LOKALE Demo (selbst gehostet) kannst du deinen Key in der
+    // Zeile unten eintragen. Diese Datei dann NICHT teilen/committen und den Key
+    // anschliessend rotieren. Leer lassen, wenn die Datei in der Claude.ai-
+    // Artifact-Umgebung läuft – dort wird die Authentifizierung automatisch
+    // übernommen. Bei Fehler/Offline greift der Demo-Fallback weiter unten.
+    // ===========================================================================
+    // API-Key wird über das Pitch-Sidebar-Inputfeld gesetzt und in localStorage gespeichert
+    function getApiKey() {
+        try { return localStorage.getItem('freddy_api_key') || ''; } catch(e) { return ''; }
+    }
+    function saveApiKey(val) {
+        try {
+            if (val && val.trim()) localStorage.setItem('freddy_api_key', val.trim());
+            else localStorage.removeItem('freddy_api_key');
+        } catch(e) {}
+    }
+
+    // Dokumentenerkennung via Claude-API: Dokumenttyp bestimmen + Felder gemäss
+    // Formular-Schema extrahieren. Bei Fehler (offline/CORS) Fallback auf Demo-Daten,
+    // damit der Pitch nie hängen bleibt.
+    async function analyzeDocument(file, doc) {
+        if (!getApiKey()) {
+            showToastV('⚠️ Kein API-Key hinterlegt – Demo-Modus aktiv');
+            return new Promise(resolve => setTimeout(() => resolve(demoGuess(file.name)), 600));
+        }
+        try {
+            const b64 = await fileToBase64(file);
+            const isPdf = (file.type || '').includes('pdf');
+            const src = isPdf
+                ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: b64 } }
+                : { type: 'image', source: { type: 'base64', media_type: file.type || 'image/jpeg', data: b64 } };
+            const schema = aFieldSchema();
+            const prompt = `Du analysierst ein hochgeladenes Dokument aus einem Schweizer Arbeitslosengeld-Antrag.
+Erwarteter Dokumenttyp (Hinweis, kann abweichen): "${doc.docType || 'unbekannt'}".
+
+Aufgabe:
+1. Bestimme den tatsächlichen Dokumenttyp.
+2. Extrahiere nur Werte, die du sicher im Dokument findest, passend zu diesem Formular-Schema (Schlüssel: Bedeutung):
+${JSON.stringify(schema)}
+
+Antworte AUSSCHLIESSLICH mit JSON, ohne Markdown, ohne Erklärung:
+{"docType":"<typ>","extracts":{"<schlüssel>":"<wert>"}}
+Regeln: Datum als TT.MM.JJJJ. Nur Schlüssel aus dem Schema verwenden. Keine erfundenen Werte.`;
+            const headers = { 'Content-Type': 'application/json' };
+            const _key = getApiKey();
+            if (_key) {
+                headers['x-api-key'] = _key;
+                headers['anthropic-version'] = '2023-06-01';
+                headers['anthropic-dangerous-direct-browser-access'] = 'true';
+            }
+            const resp = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 1000,
+                    messages: [{ role: 'user', content: [src, { type: 'text', text: prompt }] }]
+                })
+            });
+            const data = await resp.json();
+            const text = (data.content || []).filter(i => i.type === 'text').map(i => i.text).join('');
+            const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+            return { docType: parsed.docType || doc.docType || 'Dokument', extracts: parsed.extracts || null };
+        } catch (e) {
+            // Fallback (Demo): Typ + Extrakte anhand des Dateinamens, falls API offline/CORS
+            return new Promise(resolve => setTimeout(() => resolve(demoGuess(file.name)), 800));
+        }
+    }
+
+    function clearAntragData() {
+        // Alle Formulardaten leeren (auch persönliche Angaben)
+        Object.keys(aState).forEach(k => {
+            if (Array.isArray(aState[k])) aState[k] = [];
+            else if (typeof aState[k] === 'boolean') aState[k] = false;
+            else aState[k] = '';
+        });
+        docs = [];
+        agDone = false;
+        aCur = 0;
+        aFilled.clear();
+        aDocFilled.clear();
+        antragSubmitted = false;
+    }
+
+    function renderAntragAll() {
+        renderDocList();
+        applyAGStatus();
+        renderAntragView();
+        renderAEdit();
+        applyAntragStatus();
+    }
+
+    function resetAntragData() {
+        clearAntragData();
+        renderAntragAll();
+        showToastV('Formular geleert – alle Angaben zurückgesetzt');
+    }
+
+    // ===== Arbeitgeber-Status (Pitch-Aktion: Bescheinigung eingereicht) =====
+    let agDone = false;
+    function toggleAGStatus() {
+        agDone = !agDone;
+        applyAGStatus();
+        if (document.getElementById('antrag-edit').classList.contains('active')) renderAEdit();
+        showToastV(agDone ? 'Migros AG hat die Bescheinigung eingereicht ✓' : 'Arbeitgeber-Status zurückgesetzt');
+    }
+    function applyAGStatus() {
+        const emp = (aState.agName || '').trim();
+        const known = !!emp;
+        // 'unknown' = kein Arbeitgeber erfasst, 'missing' = bekannt aber Bescheinigung fehlt, 'submitted' = eingereicht
+        const state = !known ? 'unknown' : (agDone ? 'submitted' : 'missing');
+
+        // Home-Warnkarte
+        const w = document.getElementById('homeAGWarning');
+        if (w) {
+            if (state === 'unknown') {
+                w.style.display = 'none';
+            } else {
+                w.style.display = '';
+                w.classList.toggle('done', state === 'submitted');
+                w.innerHTML = state === 'submitted'
+                    ? `<i class="ti ti-circle-check"></i><div class="ag-content"><div class="ag-title">${emp} hat die Bescheinigung eingereicht</div><div class="ag-desc">Alles vollständig – dein Antrag kann jetzt entschieden werden.</div></div>`
+                    : `<i class="ti ti-clock"></i><div class="ag-content"><div class="ag-title">Wir warten auf ${emp}</div><div class="ag-desc">Dein Ex-Arbeitgeber muss noch die Bescheinigung einreichen. Solange das fehlt, kann dein Antrag nicht entschieden werden.</div><span class="ag-action">Details ansehen</span></div>`;
+            }
+        }
+        // Timeline-Eintrag
+        const dot = document.getElementById('tlAGDot'), meta = document.getElementById('tlAGMeta');
+        if (dot && meta) {
+            if (state === 'unknown') {
+                dot.className = 'ti-dot ti-next'; dot.innerHTML = '<i class="ti ti-file-text"></i>';
+                meta.className = 'meta'; meta.textContent = 'Sobald Arbeitgeber erfasst';
+            } else if (state === 'submitted') {
+                dot.className = 'ti-dot ti-done'; dot.innerHTML = '<i class="ti ti-check"></i>';
+                meta.className = 'meta'; meta.textContent = 'Eingereicht am 29. Mai';
+            } else {
+                dot.className = 'ti-dot ti-waiting'; dot.innerHTML = '<i class="ti ti-clock"></i>';
+                meta.className = 'meta warning'; meta.textContent = 'Wartet auf ' + emp;
+            }
+        }
+        // Abschnitt in der Antrag-Ansicht
+        const ag = document.getElementById('agSectionView');
+        if (ag) {
+            ag.classList.toggle('done', state === 'submitted');
+            if (state === 'unknown') {
+                ag.innerHTML = `<div class="ag-sec-head" onclick="toggleAGSec(this)" style="cursor:pointer;"><i class="ti ti-file-text" style="color:#888780;"></i><div class="ag-sec-title">Arbeitgeberbescheinigung</div><span class="pill" style="background:#F1EFE8;color:#888780;"><span class="d" style="background:#A8A6A0;"></span>Offen</span><i class="ti ti-chevron-down ag-chev" style="color:#888780;font-size:16px;"></i></div><div class="ag-sec-body"><div class="ag-sec-desc" style="margin-top:6px;">Sobald du deinen letzten Arbeitgeber erfasst hast, fordern wir die Bescheinigung (Lohn, Kündigungsgrund, Anstellungsdauer) automatisch bei ihm an.</div></div>`;
+            } else if (state === 'submitted') {
+                ag.innerHTML = `<div class="ag-sec-head" onclick="toggleAGSec(this)" style="cursor:pointer;"><i class="ti ti-circle-check"></i><div class="ag-sec-title">Bescheinigung von ${emp}</div><span class="pill" style="background:#EAF3DE;color:#173404;"><span class="d" style="background:#3B6D11;"></span>Eingereicht</span><button class="vedit" style="background:#97C459;color:#173404;margin-left:6px;" onclick="event.stopPropagation(); aEditStep('agbesch')" title="Im Antrag ansehen"><i class="ti ti-arrow-right"></i></button><i class="ti ti-chevron-down ag-chev" style="color:#3B6D11;font-size:16px;"></i></div><div class="ag-sec-body"><div class="ag-sec-desc" style="margin-top:6px;">${emp} hat die Bescheinigung am 29. Mai eingereicht. Lohn und Anstellungsdauer sind bestätigt – dein Antrag ist jetzt vollständig.</div></div>`;
+            } else {
+                ag.innerHTML = `<div class="ag-sec-head" onclick="toggleAGSec(this)" style="cursor:pointer;"><i class="ti ti-clock"></i><div class="ag-sec-title">Bescheinigung von ${emp}</div><span class="pill missing"><span class="d"></span>Fehlt</span><button class="vedit" style="background:#FAC775;color:#633806;margin-left:6px;" onclick="event.stopPropagation(); aEditStep('agbesch')" title="Im Antrag ansehen"><i class="ti ti-arrow-right"></i></button><i class="ti ti-chevron-down ag-chev" style="color:#BA7517;font-size:16px;"></i></div><div class="ag-sec-body"><div class="ag-sec-desc" style="margin-top:6px;">Dieser Abschnitt des Antrags muss von deinem Ex-Arbeitgeber ausgefüllt werden (Lohn, Kündigungsgrund, Anstellungsdauer). Solange er fehlt, kann die ALK nicht entscheiden. ${emp} ist seit 6 Tagen überfällig.</div><button class="ag-sec-btn" onclick="event.stopPropagation(); agReminderAntrag()"><i class="ti ti-bell" style="font-size:14px;"></i> ${emp} erinnern</button></div>`;
+            }
+        }
+        // Karte im Detail-Modal
+        const mc = document.getElementById('agModalMigros');
+        if (mc) {
+            const initial = known ? emp.charAt(0).toUpperCase() : '?';
+            if (state === 'unknown') {
+                mc.className = 'actor-card';
+                mc.innerHTML = `<div class="ac-head"><div class="ac-avatar" style="background:#F1EFE8;color:#888780;">?</div><div style="flex:1;"><div class="ac-name">Arbeitgeber</div><div class="ac-role">Noch nicht erfasst</div></div><span class="status" style="background:#F1EFE8;color:#888780;"><span class="d" style="background:#A8A6A0;"></span>Offen</span></div><div class="ac-desc">Sobald du deinen letzten Arbeitgeber erfasst hast, fordern wir die Bescheinigung automatisch an.</div>`;
+            } else if (state === 'submitted') {
+                mc.className = 'actor-card';
+                mc.innerHTML = `<div class="ac-head"><div class="ac-avatar" style="background:#EAF3DE;color:#3B6D11;">${initial}</div><div style="flex:1;"><div class="ac-name">${emp}</div><div class="ac-role">Ex-Arbeitgeber</div></div><span class="status done"><span class="d"></span>Erledigt</span></div><div class="ac-desc">${emp} hat die Bescheinigung am 29. Mai eingereicht. Dein Antrag ist jetzt vollständig.</div>`;
+            } else {
+                mc.className = 'actor-card waiting';
+                mc.innerHTML = `<div class="ac-head"><div class="ac-avatar warning">${initial}</div><div style="flex:1;"><div class="ac-name">${emp}</div><div class="ac-role">Ex-Arbeitgeber</div></div><span class="status waiting-ag"><span class="d"></span>Überfällig</span></div><div class="ac-desc warning">${emp} hat seit 6 Tagen nicht reagiert. Die Arbeitgeberbescheinigung fehlt – ohne sie kann die ALK nicht entscheiden.</div><button class="primary-btn" style="font-size: 13px; padding: 10px;" onclick="agReminder()"><i class="ti ti-bell" style="font-size: 16px;"></i> ${emp} erinnern</button>`;
+            }
+        }
+        // Unterer Aktions-Button in der Antrag-Ansicht
+        const bb = document.getElementById('agViewBottomBtn');
+        if (bb) {
+            if (state === 'unknown') {
+                bb.style.display = 'none';
+            } else if (state === 'submitted') {
+                bb.style.display = '';
+                bb.style.background = '#EAF3DE'; bb.style.color = '#173404';
+                bb.onclick = () => showToastV('Antrag ist vollständig – die ALK prüft jetzt.');
+                bb.innerHTML = '<i class="ti ti-circle-check"></i> Antrag vollständig';
+            } else {
+                bb.style.display = '';
+                bb.style.background = ''; bb.style.color = '';
+                bb.onclick = () => agReminderAntrag();
+                bb.innerHTML = `<i class="ti ti-bell"></i> ${emp} erinnern`;
+            }
+        }
+    }
+    function showToastV(msg) {
+        const t = document.getElementById('toast');
+        const m = document.getElementById('toastMsg');
+        if (t && m) {
+            m.textContent = msg;
+            t.style.display = 'flex';
+            setTimeout(() => { t.style.display = 'none'; }, 2400);
+        }
+    }
+
+    // ===== ANTRAG-STEPPER (Schema aus Formular 10000d) =====
+    const aSchema = [
+        { id:'personal', title:'Persönliche Angaben', icon:'ti-user', sub:'Aus deiner RAV-Anmeldung übernommen – bitte prüfen.', fields:[
+                { type:'text', key:'name', label:'Name', value:'Fremd', prefilled:true },
+                { type:'text', key:'vorname', label:'Vorname', value:'Freddy', prefilled:true },
+                { type:'text', key:'ahv', label:'AHV-Nummer', value:'756.1234.5678.97', prefilled:true },
+                { type:'date', key:'gebdat', label:'Geburtsdatum', value:'14.03.1991', prefilled:true },
+                { type:'select', key:'nat', label:'Nationalität', options:['Eritrea','Schweiz','Ukraine','Syrien','Andere'], value:'Eritrea', prefilled:true },
+                { type:'text', key:'strasse', label:'Strasse / Nr.', value:'Effingerstrasse 12', prefilled:true },
+                { type:'text', key:'plzort', label:'PLZ / Ort', value:'3011 Bern', prefilled:true },
+                { type:'text', key:'tel', label:'Telefon', value:'+41 79 123 45 67', prefilled:true },
+                { type:'text', key:'email', label:'E-Mail', value:'freddy.fremd@mail.ch', prefilled:true },
+                { type:'radio', key:'zivil', label:'Zivilstand', options:['ledig','verheiratet / eingetr. Partnerschaft','geschieden / aufgelöst','verwitwet'], value:'ledig' }
+            ]},
+        { id:'verh', title:'Persönliche Verhältnisse', icon:'ti-adjustments', sub:'Wie und wie viel möchtest du arbeiten?', fields:[
+                { type:'percent', key:'grad', label:'Maximal gewünschter Beschäftigungsgrad', value:'100' },
+                { type:'yesno', key:'kinder', label:'Bist du unterhaltspflichtig gegenüber Kindern (bis 18, in Ausbildung bis 25)?', value:'nein', yesHint:'Dann brauchen wir später das Formular «Unterhaltspflicht gegenüber Kindern» (Nr. 10009d).' },
+                { type:'yesno', key:'arbfaehig', label:'Bist du zurzeit im gewünschten Ausmass arbeitsfähig?', value:'ja', noHint:'Bitte ein Arztzeugnis beilegen und den arbeitsfähigen Prozentsatz angeben.' }
+            ]},
+        { id:'kinderForm', title:'Unterhaltspflicht: Kinder', icon:'ti-users', sub:'Du hast Kinder angegeben – darum auch Formular 10009d. Wir füllen es gleich hier aus.', cond:()=>aState.kinder==='ja', fields:[
+                { type:'childforms', key:'kinderListe', label:'Deine Kinder', value:[
+                        { name:'Fremd', vorname:'Amanuel', verh:'Mutter / Vater', gebdat:'12.09.2016', ahv:'756.9876.5432.10', geschlecht:'männlich', nat:'Eritrea', taetigkeit:'Schule', seit:'' }
+                    ]}
+            ]},
+        { id:'kinderZuschlag', title:'Zuschlag Kinderzulagen', icon:'ti-coin', sub:'Bekommst du einen Zuschlag zum Taggeld für deine Kinder?', cond:()=>aState.kinder==='ja', fields:[
+                { type:'yesno', key:'zulageAndere', label:'Hat eine andere Person (z.B. der andere Elternteil) Anspruch auf Kinder-/Ausbildungszulagen?', value:'nein',
+                    yesHint:'Dann kann der Zuschlag nicht ausgerichtet werden, wenn diese Person erwerbstätig ist.' },
+                { type:'yesno', key:'zulageBeantragen', label:'Beantragst du den Zuschlag für Kinder-/Ausbildungszulagen?', value:'ja',
+                    hintAlways:'Anspruch besteht ab einem Verdienst von CHF 630.–/Monat (Stand 2025).' },
+                { type:'info', text:'Beilagen je Kind: Lehrvertrag / Ausbildungsbestätigung (bei Kindern in Ausbildung), Bestätigung der Erwerbsunfähigkeit (falls zutreffend).' }
+            ]},
+        { id:'anspruch', title:'Anspruch & Auszahlung', icon:'ti-calendar-dollar', sub:'Ab wann und wohin soll dein Geld fliessen?', fields:[
+                { type:'date', key:'anspruchAb', label:'Ab welchem Datum erhebst du Anspruch?', value:'01.04.2026', hint:'Meist der erste Tag nach deinem letzten Arbeitstag.' },
+                { type:'text', key:'iban', label:'Zahlungsverbindung (IBAN)', value:'', placeholder:'CH00 0000 0000 0000 0000 0' }
+            ]},
+        { id:'sozial', title:'Andere Sozialversicherungen', icon:'ti-shield-heart', sub:'Beziehst du Geld von anderen Versicherungen?', fields:[
+                { type:'yesno', key:'taggeld', label:'Beziehst du Taggeld oder eine Rente (AHV, IV, BVG, Kranken-/Unfalltaggeld, MV, ausländisch)?', value:'nein', yesHint:'Letzte Abrechnung beilegen; künftige Korrespondenz an die ALK weiterleiten.' },
+                { type:'yesno', key:'bvg', label:'Hast du die freiwillige Weiterführung des BVG-Schutzes (Tod / Invalidität) beantragt?', value:'nein' },
+                { type:'yesno', key:'kapital', label:'Hast du aus BVG / Pensionskasse eine Kapitalabfindung erhalten?', value:'nein' }
+            ]},
+        { id:'letztes', title:'Letztes Arbeitsverhältnis', icon:'ti-briefcase', sub:'Angaben zu deinem letzten Job.', fields:[
+                { type:'yesno', key:'angest12', label:'Warst du in den letzten 12 Monaten angestellt?', value:'ja' },
+                { type:'text', key:'agName', label:'Name des letzten Arbeitgebers', value:'Migros AG', prefilled:true },
+                { type:'text', key:'agOrt', label:'PLZ / Ort des Arbeitgebers', value:'3027 Bern', prefilled:true },
+                { type:'select', key:'form', label:'Form des Arbeitsverhältnisses', options:['Vollzeitbeschäftigung','Teilzeitbeschäftigung','befristet','unbefristet','temporär','Lehrverhältnis','Beschäftigung auf Abruf','Saisonanstellung','Praktikum'], value:'Vollzeitbeschäftigung' },
+                { type:'yesno', key:'vertrag', label:'Wurde ein schriftlicher Arbeitsvertrag unterzeichnet?', value:'ja', yesHint:'Kopie des Arbeitsvertrags beilegen.' },
+                { type:'text', key:'kgrund', label:'Was war der Kündigungsgrund?', value:'Betriebliche Umstrukturierung' },
+                { type:'date', key:'letzterTag', label:'An welchem Tag hast du zuletzt gearbeitet?', value:'31.03.2026', prefilled:true },
+                { type:'dates', key:'dauer', label:'Dauer des Arbeitsverhältnisses', from:'01.06.2023', to:'31.03.2026' }
+            ]},
+        { id:'kuend', title:'Kündigung', icon:'ti-mail-x', sub:'Wer hat gekündigt – und unter welchen Umständen?', fields:[
+                { type:'radio', key:'wer', label:'Wer hat das Arbeitsverhältnis gekündigt?', options:['Arbeitgeber','ich','gegenseitiges Einvernehmen','befristetes Arbeitsverhältnis'], value:'Arbeitgeber' },
+                { type:'radio', key:'wie', label:'Mündlich oder schriftlich?', options:['mündlich','schriftlich'], value:'schriftlich', hint:'Bei schriftlich: Kopie der Kündigung beilegen.' },
+                { type:'yesno', key:'arbunf', label:'Warst du bei Kündigung / während der Frist krank oder verunfallt?', value:'nein', yesHint:'Arztzeugnisse beilegen.' },
+                { type:'yesno', key:'schwanger', label:'Warst du zum Zeitpunkt der Kündigung schwanger?', value:'nein' },
+                { type:'yesno', key:'militaer', label:'Hast du rund um die Kündigung Militär / Zivildienst / Zivilschutz geleistet?', value:'nein' }
+            ]},
+        { id:'betrieb', title:'Betrieb & Lohnansprüche', icon:'ti-building', sub:'Beteiligungen und offene Forderungen.', fields:[
+                { type:'yesno', key:'betLetzter', label:'Warst du am Betrieb des letzten Arbeitgebers finanziell beteiligt oder im Entscheidungsgremium (z.B. VR, Geschäftsführung)?', value:'nein' },
+                { type:'yesno', key:'weitLeist', label:'Wurden dir bei Beendigung weitere finanzielle Leistungen zugesprochen (z.B. Abgangsentschädigung)?', value:'nein', yesHint:'Belege einreichen.' },
+                { type:'yesno', key:'betAnder', label:'Bist du an einem anderen Betrieb finanziell beteiligt oder im Entscheidungsgremium?', value:'nein' },
+                { type:'yesno', key:'lohnKuend', label:'Machst du Lohnansprüche im Zusammenhang mit der Kündigungsfrist geltend?', value:'nein' }
+            ]},
+        { id:'aktuell', title:'Aktuelle Erwerbssituation', icon:'ti-briefcase-2', sub:'Arbeitest du gerade (noch) etwas?', fields:[
+                { type:'yesno', key:'aktTaetig', label:'Übst du aktuell eine andere Erwerbstätigkeit aus oder beziehst du noch ein Einkommen?', value:'nein', yesHint:'Dann geben wir Arbeitgeber, Tätigkeit, Pensum und ob selbständig/unselbständig an.' },
+                { type:'yesno', key:'selbstAufg', label:'Hast du in den letzten 2 Jahren eine selbständige Erwerbstätigkeit aufgegeben?', value:'nein', yesHint:'Bestätigung der Ausgleichskasse beilegen.' }
+            ]},
+        { id:'weitere', title:'Weitere Erwerbstätigkeiten', icon:'ti-list-details', sub:'Alle Anstellungen der letzten 2 Jahre (für die Rahmenfrist).', fields:[
+                { type:'yesno', key:'hatWeit', label:'Hattest du in den letzten 2 Jahren weitere Erwerbstätigkeiten (ausser den oben genannten)?', value:'ja' },
+                { type:'employers', key:'arbeitgeber', label:'Erfasste Arbeitgeber', value:[ {name:'Migros AG', ort:'3027 Bern', von:'01.06.2023', bis:'31.03.2026'} ] }
+            ]},
+        { id:'verhind', title:'Verhinderungsgründe', icon:'ti-calendar-x', sub:'Zeiten ausserhalb einer Anstellung, in denen du nicht arbeiten konntest.', fields:[
+                { type:'yesno', key:'hatVerh', label:'Warst du in den letzten 2 Jahren ganz oder teilweise verhindert (Militär, Ausbildung, Krankheit, Haft, Kinderbetreuung)?', value:'nein', yesHint:'Gründe und Zeiträume mit Nachweisen ergänzen.' }
+            ]},
+        { id:'ereignis', title:'Ausserordentliches Ereignis', icon:'ti-alert-triangle', sub:'Gab es im letzten Jahr ein besonderes Ereignis?', fields:[
+                { type:'yesno', key:'hatEreig', label:'Erhebst du Anspruch nach einem ausserordentlichen Ereignis (Scheidung, Tod/Invalidität des Partners, Wegfall einer Betreuung/IV-Rente, Rückkehr aus dem Ausland)?', value:'nein' }
+            ]},
+        { id:'agbesch', title:'Arbeitgeberbescheinigung', icon:'ti-file-certificate', sub:'Dieser Teil wird von deinem Arbeitgeber ausgefüllt – nicht von dir.', type:'agbescheinigung' },
+        { id:'best', title:'Bemerkungen & Bestätigung', icon:'ti-circle-check', sub:'Letzter Schritt – prüfen und einreichen.', fields:[
+                { type:'textarea', key:'bemerk', label:'Allgemeine Bemerkungen (optional)', value:'', placeholder:'Falls etwas nicht gepasst hat …' },
+                { type:'checkbox', key:'wahr', label:'Ich bestätige, alle Fragen wahrheitsgetreu und vollständig beantwortet zu haben (Art. 105/106 AVIG).', value:true },
+                { type:'checkbox', key:'massn', label:'Ich nehme zur Kenntnis, dass ich verpflichtet bin, an arbeitsmarktlichen Massnahmen teilzunehmen.', value:true },
+                { type:'review' }
+            ]}
+    ];
+    let aCur = 0;
+    const aState = {};
+    aSchema.forEach(s => (s.fields||[]).forEach(f => { if (f.key !== undefined) aState[f.key] = f.value; }));
+    window.aState = aState; // für Inline-Handler erreichbar
+    const aStateInitial = JSON.parse(JSON.stringify(aState));
+    // Felder, die automatisch befüllt wurden (RAV/Dokumenten-API) → "übernommen"-Flag
+    let aFilled = new Set();
+    aSchema.forEach(s => (s.fields || []).forEach(f => { if (f.prefilled && f.key) aFilled.add(f.key); }));
+    let aDocFilled = new Set();   // speziell aus hochgeladenen Dokumenten gemappt
+    let antragSubmitted = true;   // wurde der Antrag eingereicht? (Reset → false)
+
+    function mappingHintHtml() {
+        if (!aDocFilled.size) return '';
+        return `<div style="background:#FFF8E6;border:0.5px solid #FAC775;border-radius:12px;padding:12px;margin-bottom:12px;display:flex;gap:10px;align-items:flex-start;"><i class="ti ti-sparkles" style="color:#BA7517;font-size:18px;flex-shrink:0;"></i><div style="font-size:12px;color:#633806;line-height:1.5;"><b>${aDocFilled.size} Feld(er) automatisch übernommen.</b> Wir haben diese aus deinen Dokumenten ausgefüllt – bitte überprüfe sie auf Richtigkeit.</div></div>`;
+    }
+
+    function applyAntragStatus() {
+        const b = document.getElementById('antragStatusBanner');
+        if (b) b.style.display = antragSubmitted ? 'flex' : 'none';
+        const e = document.getElementById('alkEingangSection');
+        if (e) e.style.display = antragSubmitted ? 'block' : 'none';
+        const h = document.getElementById('antragMappingHint');
+        if (h) h.innerHTML = mappingHintHtml();
+
+        // Home-Timeline: Antrag-Schritt
+        const aDot = document.getElementById('tlAntragDot'), aMeta = document.getElementById('tlAntragMeta');
+        if (aDot && aMeta) {
+            aDot.className = antragSubmitted ? 'ti-dot ti-done' : 'ti-dot ti-now';
+            aDot.innerHTML = antragSubmitted ? '<i class="ti ti-check"></i>' : '<i class="ti ti-edit"></i>';
+            aMeta.className = antragSubmitted ? 'meta' : 'meta now';
+            aMeta.textContent = antragSubmitted ? 'Erledigt · eingereicht' : 'Jetzt dran';
+        }
+        // Wurde die AVP-Meldung des aktuellen Monats eingereicht? -> Geld wird ausbezahlt
+        const avpPaid = (typeof avpData !== 'undefined') && avpData[avpCur] && avpData[avpCur].status === 'eingereicht';
+        // Home-Timeline: AVP-Schritt wird "jetzt", sobald der Antrag eingereicht ist
+        const vDot = document.getElementById('tlAvpDot'), vMeta = document.getElementById('tlAvpMeta');
+        if (vDot && vMeta) {
+            if (antragSubmitted && avpPaid) {
+                vDot.className = 'ti-dot ti-done'; vDot.innerHTML = '<i class="ti ti-check"></i>';
+                vMeta.className = 'meta'; vMeta.textContent = 'Erledigt · ' + avpCur + ' eingereicht';
+            } else if (antragSubmitted) {
+                vDot.className = 'ti-dot ti-now'; vDot.innerHTML = '<i class="ti ti-edit"></i>';
+                vMeta.className = 'meta now'; vMeta.textContent = 'Jetzt dran · monatlich fällig';
+            } else {
+                vDot.className = 'ti-dot ti-month'; vDot.innerHTML = '<i class="ti ti-repeat"></i>';
+                vMeta.className = 'meta'; vMeta.textContent = 'Angaben der versicherten Person';
+            }
+        }
+        // Prominente "Nächster Schritt"-Karte
+        const ns = document.getElementById('nextStepCard');
+        if (ns) {
+            if (antragSubmitted && avpPaid) {
+                ns.innerHTML = `<span class="urgent" style="background:#EAF3DE;color:#173404;"><i class="ti ti-circle-check" style="font-size:12px;"></i> Erledigt</span><h3>Alles erledigt für ${avpCur}</h3><div class="desc">Deine AVP-Meldung ist übermittelt und das Geld wurde ausbezahlt. Nächste Meldung folgt im nächsten Monat.</div><button class="primary-btn" onclick="openAVP()"><i class="ti ti-clipboard-check"></i> AVP-Meldungen ansehen</button>`;
+            } else {
+                ns.innerHTML = antragSubmitted
+                    ? `<span class="urgent"><i class="ti ti-clock" style="font-size:12px;"></i> Jetzt dran</span><h3>AVP-Meldung einreichen</h3><div class="desc">Dein Antrag ist eingereicht und in Prüfung. Reiche jetzt monatlich deine „Angaben der versicherten Person" ein.</div><button class="primary-btn" onclick="openAVP()"><i class="ti ti-clipboard-check"></i> AVP-Meldung öffnen</button>`
+                    : `<span class="urgent"><i class="ti ti-clock" style="font-size:12px;"></i> Jetzt dran</span><h3>Antrag auf Arbeitslosengeld stellen</h3><div class="desc">Du bist beim RAV und bei AGOV registriert. Jetzt brauchen wir Angaben zu deinem letzten Job und deinen Lohnabrechnungen.</div><button class="primary-btn" onclick="openAntrag()"><i class="ti ti-sparkles"></i> Jetzt zusammen erledigen</button>`;
+            }
+        }
+        // Auszahlung: nur wenn Lohnabrechnung vorliegt; "ausbezahlt" sobald AVP eingereicht
+        const payout = document.getElementById('payoutTile');
+        if (payout) {
+            const hasLohn = docs.some(d => /lohn/i.test(d.docType || ''));
+            payout.style.display = hasLohn ? '' : 'none';
+            if (hasLohn) {
+                payout.innerHTML = (antragSubmitted && avpPaid)
+                    ? `<div class="lbl">Geld ausbezahlt</div><div class="val"><i class="ti ti-circle-check" style="color:#3B6D11;font-size:16px;"></i>CHF 2'400</div><div class="sub">${avpCur} · überwiesen</div>`
+                    : `<div class="lbl">Provisorische Auszahlung</div><div class="val">~ CHF 2'400</div><div class="sub">Ende Juni</div>`;
+            }
+        }
+    }
+
+    function aEsc(s){ return String(s).replace(/"/g,'&quot;'); }
+
+    function aRenderField(f) {
+        if (f.type==='text') return `<div class="fg"><label class="fl">${f.label}${aFilled.has(f.key)?'<span class="pf"><i class="ti ti-sparkles" style="font-size:10px;"></i> übernommen</span>':''}</label><input class="fi" value="${aEsc(aState[f.key]??'')}" placeholder="${f.placeholder||''}" oninput="aState['${f.key}']=this.value">${f.hint?`<div class="hint">${f.hint}</div>`:''}</div>`;
+        if (f.type==='date') return `<div class="fg"><label class="fl">${f.label}${aFilled.has(f.key)?'<span class="pf"><i class="ti ti-sparkles" style="font-size:10px;"></i> übernommen</span>':''}</label><input class="fi" value="${aEsc(aState[f.key]??'')}" placeholder="TT.MM.JJJJ" oninput="aState['${f.key}']=this.value">${f.hint?`<div class="hint">${f.hint}</div>`:''}</div>`;
+        if (f.type==='percent') return `<div class="fg"><label class="fl">${f.label}</label><div style="display:flex;align-items:center;gap:8px;"><input class="fi" style="text-align:right;" value="${aEsc(aState[f.key]??'')}" oninput="aState['${f.key}']=this.value"><span style="font-size:14px;color:#888780;">% einer Vollzeitstelle</span></div></div>`;
+        if (f.type==='select') return `<div class="fg"><label class="fl">${f.label}${aFilled.has(f.key)?'<span class="pf"><i class="ti ti-sparkles" style="font-size:10px;"></i> übernommen</span>':''}</label><select class="fs" onchange="aState['${f.key}']=this.value">${f.options.map(o=>`<option ${aState[f.key]===o?'selected':''}>${o}</option>`).join('')}</select></div>`;
+        if (f.type==='yesno') { const v=aState[f.key]; let hint=(v==='ja'&&f.yesHint)?`<div class="hint">${f.yesHint}</div>`:(v==='nein'&&f.noHint)?`<div class="hint">${f.noHint}</div>`:''; if(f.hintAlways) hint+=`<div class="hint">${f.hintAlways}</div>`; return `<div class="fg"><label class="fl">${f.label}</label><div class="yn"><div class="opt ${v==='nein'?'sel':''}" onclick="aSetVal('${f.key}','nein')">Nein</div><div class="opt ${v==='ja'?'sel':''}" onclick="aSetVal('${f.key}','ja')">Ja</div></div>${hint}</div>`; }
+        if (f.type==='radio') return `<div class="fg"><label class="fl">${f.label}</label><div class="radio-list">${f.options.map(o=>`<div class="ropt ${aState[f.key]===o?'sel':''}" onclick="aSetVal('${f.key}','${aEsc(o)}')"><div class="dot"></div>${o}</div>`).join('')}</div>${f.hint?`<div class="hint">${f.hint}</div>`:''}</div>`;
+        if (f.type==='checkbox') return `<div class="chk ${aState[f.key]?'sel':''}" onclick="aSetVal('${f.key}',!aState['${f.key}'])"><div class="box">${aState[f.key]?'<i class="ti ti-check"></i>':''}</div><div>${f.label}</div></div>`;
+        if (f.type==='textarea') return `<div class="fg"><label class="fl">${f.label}</label><textarea class="fi" rows="3" placeholder="${f.placeholder||''}" oninput="aState['${f.key}']=this.value">${aEsc(aState[f.key]||'')}</textarea></div>`;
+        if (f.type==='dates') return `<div class="fg"><label class="fl">${f.label}</label><div class="frow3"><input class="fi" value="${aEsc(f.from)}" placeholder="von"><input class="fi" value="${aEsc(f.to)}" placeholder="bis"></div></div>`;
+        if (f.type==='info') return `<div class="info-box"><i class="ti ti-info-circle"></i><div>${f.text}</div></div>`;
+        if (f.type==='employers') { const list=aState[f.key]||[]; return `<div class="fg"><label class="fl">${f.label}</label>${list.map((e,i)=>`<div class="emp-card"><i class="ti ti-x rm" onclick="aRmEmp(${i})"></i><div style="font-size:13px;font-weight:500;">${e.name||'Arbeitgeber'}</div><div style="font-size:11px;color:#888780;margin-top:2px;">${e.ort||''} · ${e.von||''} – ${e.bis||''}</div></div>`).join('')}<button class="add-btn" onclick="aAddEmp()"><i class="ti ti-plus"></i> Weiteren Arbeitgeber hinzufügen</button><div class="hint">Schweizer Anstellung: Arbeitgeberbescheinigung (10006d). EU/EFTA: Formular PD U1.</div></div>`; }
+        if (f.type==='childforms') {
+            const list = aState[f.key]||[];
+            const taet = ['Schule','Lehre','Studium','erwerbstätig','nicht erwerbstätig','erwerbsunfähig'];
+            const verh = ['Mutter / Vater','Stiefmutter / -vater','Pflegemutter / -vater','Grossmutter / -vater','Schwester / Bruder'];
+            const gesch = ['männlich','weiblich'];
+            const card = (c,i)=>`<div class="emp-card" style="padding:14px;">
+        ${list.length>1?`<i class="ti ti-x rm" onclick="aRmChild(${i})"></i>`:''}
+        <div style="font-size:12px;font-weight:500;color:#534AB7;margin-bottom:10px;">${i+1}. Kind</div>
+        <div class="frow3" style="margin-bottom:8px;">
+          <input class="fi" value="${aEsc(c.vorname||'')}" placeholder="Vorname" oninput="aState.kinderListe[${i}].vorname=this.value">
+          <input class="fi" value="${aEsc(c.name||'')}" placeholder="Name" oninput="aState.kinderListe[${i}].name=this.value">
+        </div>
+        <div class="frow3" style="margin-bottom:8px;">
+          <input class="fi" value="${aEsc(c.gebdat||'')}" placeholder="Geburtsdatum" oninput="aState.kinderListe[${i}].gebdat=this.value">
+          <select class="fs" onchange="aState.kinderListe[${i}].geschlecht=this.value">${gesch.map(o=>`<option ${c.geschlecht===o?'selected':''}>${o}</option>`).join('')}</select>
+        </div>
+        <input class="fi" style="margin-bottom:8px;" value="${aEsc(c.ahv||'')}" placeholder="AHV-Nummer" oninput="aState.kinderListe[${i}].ahv=this.value">
+        <select class="fs" style="margin-bottom:8px;" onchange="aState.kinderListe[${i}].verh=this.value">${verh.map(o=>`<option ${c.verh===o?'selected':''}>${o}</option>`).join('')}</select>
+        <select class="fs" onchange="aState.kinderListe[${i}].taetigkeit=this.value">${taet.map(o=>`<option ${c.taetigkeit===o?'selected':''}>${o}</option>`).join('')}</select>
+      </div>`;
+            return `<div class="fg"><label class="fl">${f.label}</label>${list.map(card).join('')}
+        <button class="add-btn" onclick="aAddChild()"><i class="ti ti-plus"></i> Weiteres Kind hinzufügen</button>
+        <div class="hint">Kinder bis 18 (in Ausbildung bis 25, erwerbsunfähig bis 20). Für Kinder im Ausland: Formular 10010d.</div></div>`;
+        }
+        return '';
+    }
+
+    function aReview() {
+        const rows = [
+            ['Name', (aState.vorname||'')+' '+(aState.name||'')],
+            ['Beschäftigungsgrad', (aState.grad||'')+'%'],
+            ['Anspruch ab', aState.anspruchAb||''],
+            ['Letzter Arbeitgeber', aState.agName||''],
+            ['Letzter Arbeitstag', aState.letzterTag||''],
+            ['Kündigung durch', aState.wer||''],
+            ['Arbeitgeberbescheinigung', agDone ? '✓ eingereicht (Migros AG)' : '⏳ ausstehend (Migros AG)']
+        ];
+        return `<div style="font-size:12px;color:#888780;text-transform:uppercase;letter-spacing:0.5px;margin:8px 0;">Zusammenfassung</div>
+      <div style="background:white;border:0.5px solid rgba(0,0,0,0.08);border-radius:12px;padding:4px 14px;">${rows.map(r=>`<div class="review-row"><span class="l">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('')}</div>
+      <div class="info-box warn" style="margin-top:10px;"><i class="ti ti-clock"></i><div>Die Arbeitgeberbescheinigung fehlt noch. Du kannst einreichen – sie wird automatisch bei Migros AG angefordert.</div></div>`;
+    }
+
+    function aVisible() { return aSchema.filter(s => !s.cond || s.cond()); }
+
+    function renderAEdit() {
+        const list = aVisible();
+        const total = list.length;
+        if (aCur > total-1) aCur = total-1;
+        const s = list[aCur];
+        const pct = Math.round(((aCur+1)/total)*100);
+        document.getElementById('aCounter').textContent = `Schritt ${aCur+1} von ${total}`;
+        document.getElementById('aPct').textContent = pct+'%';
+        document.getElementById('aFill').style.width = pct+'%';
+        document.getElementById('aPrev').style.visibility = aCur===0 ? 'hidden' : 'visible';
+        document.getElementById('aNextLabel').textContent = aCur===total-1 ? 'Antrag einreichen' : 'Weiter';
+
+        let body = mappingHintHtml() + `<div class="step-icon"><i class="ti ${s.icon}"></i></div><div class="step-title">${s.title}</div><div class="step-sub">${s.sub}</div>`;
+        if (s.type==='agbescheinigung') {
+            body += agDone
+                ? `<div class="ag-card" style="background:#EAF3DE;border-color:#97C459;"><div class="ag-h"><i class="ti ti-circle-check" style="color:#3B6D11;"></i><div class="t" style="color:#173404;">Bescheinigung von Migros AG</div><span class="pill" style="background:white;color:#173404;"><span class="d" style="background:#3B6D11;"></span>Eingereicht</span></div>
+        <div class="ag-desc" style="color:#173404;">Migros AG hat die Bescheinigung am 29. Mai eingereicht. Lohn und Anstellungsdauer sind bestätigt.</div></div>
+        <div class="info-box ok"><i class="ti ti-circle-check"></i><div>Dein Antrag ist jetzt vollständig und kann von der ALK entschieden werden.</div></div>`
+                : `<div class="ag-card"><div class="ag-h"><i class="ti ti-clock"></i><div class="t">Bescheinigung von Migros AG</div><span class="pill missing"><span class="d"></span>Fehlt</span></div>
+        <div class="ag-desc">Dieser Abschnitt (Formular 10006d) wird von deinem Arbeitgeber ausgefüllt: Lohn, Anstellungsdauer, Kündigungsgrund. Wir haben die Anfrage automatisch verschickt – Migros AG ist seit 6 Tagen überfällig.</div>
+        <button class="ag-btn" onclick="agReminderAntrag()"><i class="ti ti-bell" style="font-size:14px;"></i> Migros AG erinnern</button></div>
+        <div class="info-box"><i class="ti ti-info-circle"></i><div>Du kannst den Antrag trotzdem einreichen. Die Bescheinigung wird automatisch nachgefordert – dein Antrag bleibt so lange „In Prüfung".</div></div>`;
+        } else if (s.fields && s.fields.some(f=>f.type==='review')) {
+            let inner = '';
+            s.fields.filter(f=>f.type!=='review').forEach(f=> inner += aRenderField(f));
+            body += `<div class="field-card">${inner}</div>` + aReview();
+        } else {
+            let inner = '';
+            (s.fields||[]).forEach(f => inner += aRenderField(f));
+            body += `<div class="field-card">${inner}</div>`;
+        }
+        const c = document.getElementById('aEditContent');
+        c.innerHTML = body; c.scrollTop = 0;
+    }
+
+    function aSetVal(k, v) { aState[k] = v; renderAEdit(); }
+    function aAddEmp() { aState.arbeitgeber.push({name:'Neuer Arbeitgeber', ort:'', von:'', bis:''}); renderAEdit(); }
+    function aRmEmp(i) { aState.arbeitgeber.splice(i,1); renderAEdit(); }
+    function aAddChild() { aState.kinderListe.push({name:'', vorname:'', verh:'Mutter / Vater', gebdat:'', ahv:'', geschlecht:'männlich', nat:'', taetigkeit:'Schule', seit:''}); renderAEdit(); }
+    function aRmChild(i) { aState.kinderListe.splice(i,1); renderAEdit(); }
+
+    // Direkt aus der Ansicht in einen bestimmten Bearbeiten-Schritt springen
+    function aEditStep(id) {
+        setAntragMode('edit');
+        const list = aVisible();
+        const idx = list.findIndex(s => s.id === id);
+        aCur = idx >= 0 ? idx : 0;
+        renderAEdit();
+    }
+
+    // Ein Feld als Label/Wert-Zeile(n) für die Ansicht zusammenfassen
+    function aViewRows(f) {
+        const esc = s => String(s==null?'':s).replace(/</g,'&lt;');
+        const lbl = (f.shortLabel || f.label || '').replace(/\s*\(.*?\)\s*$/,'');
+        const row = (l, v) => `<div class="vsr"><span class="lbl">${l}</span><span class="val">${v||'–'}</span></div>`;
+        if (['text','date','percent','select','radio'].includes(f.type)) {
+            let v = esc(aState[f.key]); if (f.type==='percent' && v) v += '%';
+            return row(lbl, v);
+        }
+        if (f.type==='yesno') return row(lbl, aState[f.key]==='ja' ? 'Ja' : 'Nein');
+        if (f.type==='checkbox') return row(lbl, aState[f.key] ? 'Ja' : 'Nein');
+        if (f.type==='textarea') { const v=esc(aState[f.key]); return v ? row(lbl, v) : ''; }
+        if (f.type==='dates') return row(lbl, `${esc(f.from)} – ${esc(f.to)}`);
+        if (f.type==='employers') {
+            const list = aState[f.key]||[];
+            return list.map(e => row('Arbeitgeber', `${esc(e.name)} · ${esc(e.von)}–${esc(e.bis)}`)).join('');
+        }
+        if (f.type==='childforms') {
+            const list = aState[f.key]||[];
+            return list.map((c,i) => row(`${i+1}. Kind`, `${esc(c.vorname)} ${esc(c.name)} · ${esc(c.gebdat)} · ${esc(c.taetigkeit)}`)).join('');
+        }
+        return '';
+    }
+
+    // Ansicht-Kacheln dynamisch aus dem Schema bauen, in Themengruppen
+    function renderAntragView() {
+        const cont = document.getElementById('antragViewCards');
+        if (!cont) return;
+        const groups = [
+            { label: 'Über dich', ids: ['personal','verh','kinderForm','kinderZuschlag'] },
+            { label: 'Dein letzter Job', ids: ['letztes','kuend','betrieb','aktuell','weitere'] },
+            { label: 'Anspruch & Versicherungen', ids: ['anspruch','sozial'] },
+            { label: 'Besondere Umstände', ids: ['verhind','ereignis'] }
+        ];
+        const byId = {};
+        aVisible().forEach(s => { byId[s.id] = s; });
+
+        const fillableTypes = ['text','date','percent','select','radio','yesno'];
+        const completeness = (s) => {
+            const fs = (s.fields||[]).filter(f => fillableTypes.includes(f.type) && f.key);
+            if (!fs.length) return 'complete';
+            let filled = 0;
+            fs.forEach(f => { const v = aState[f.key]; if (v != null && v !== '') filled++; });
+            if (filled === 0) return 'empty';
+            if (filled === fs.length) return 'complete';
+            return 'partial';
+        };
+        const dotFor = (comp) => comp === 'partial'
+            ? '<div class="vsd warning"><i class="ti ti-alert-triangle"></i></div>'
+            : comp === 'empty'
+                ? '<div class="vsd" style="background:#F1EFE8;color:#A8A6A0;"><i class="ti ti-circle"></i></div>'
+                : '<div class="vsd done"><i class="ti ti-check"></i></div>';
+
+        const cardHtml = (s) => {
+            const rows = (s.fields||[]).map(aViewRows).join('');
+            if (!rows) return '';
+            const comp = completeness(s);
+            const note = comp === 'partial' ? '<span style="font-size:10px;color:#BA7517;font-weight:500;margin-right:4px;">unvollständig</span>' : '';
+            return `<div class="vsec">
+        <div class="vsh" onclick="toggleVSec(this)">
+          ${dotFor(comp)}
+          <div class="vst">${s.title}</div>
+          ${note}
+          <button class="vedit" onclick="event.stopPropagation(); aEditStep('${s.id}')" title="Bearbeiten"><i class="ti ti-pencil"></i></button>
+          <i class="ti ti-chevron-right chev2" style="color:#888780;"></i>
+        </div>
+        <div class="vsb" style="display:none">${rows}</div>
+      </div>`;
+        };
+
+        let html = '';
+        groups.forEach(g => {
+            const cards = g.ids.map(id => byId[id] ? cardHtml(byId[id]) : '').filter(Boolean).join('');
+            if (!cards) return;
+            html += `<div class="vgroup-label">${g.label}</div>${cards}`;
+        });
+        cont.innerHTML = html;
+        applyAGStatus();
+        renderDocList();
+        applyAntragStatus();
+    }
+
+    // ===== ARBEITSBEMÜHUNGEN (Formular 716.007, pro Monat) =====
+    const bmMonths = ['März 2026','April 2026','Mai 2026'];
+    const bmDeadline = { 'März 2026':'5. April', 'April 2026':'5. Mai', 'Mai 2026':'5. Juni' };
+    const bmData = {
+        'März 2026': { status:'eingereicht', entries: [
+                { datum:'03.03.2026', firma:'Coop Genossenschaft', ort:'3001 Bern', kontakt:'Fr. Keller', email:'jobs@coop.ch', tel:'', stelle:'Logistikmitarbeiter', rav:true, pensum:'Vollzeit', art:'elektronisch', ergebnis:'Absage', grund:'Anderer Kandidat bevorzugt' },
+                { datum:'10.03.2026', firma:'Post CH AG', ort:'3030 Bern', kontakt:'', email:'recruiting@post.ch', tel:'', stelle:'Paketsortierer', rav:false, pensum:'Vollzeit', art:'elektronisch', ergebnis:'Absage', grund:'Stelle besetzt' },
+                { datum:'18.03.2026', firma:'SBB AG', ort:'3000 Bern', kontakt:'Hr. Brunner', email:'', tel:'+41 51 220 11 11', stelle:'Reinigung Rollmaterial', rav:true, pensum:'Teilzeit', art:'persönlich', ergebnis:'Vorstellungsgespräch', grund:'' },
+                { datum:'25.03.2026', firma:'Spitex Bern', ort:'3007 Bern', kontakt:'Fr. Wyss', email:'info@spitex-bern.ch', tel:'', stelle:'Hausdienst', rav:false, pensum:'Teilzeit', art:'brieflich', ergebnis:'Absage', grund:'Sprachkenntnisse' }
+            ]},
+        'April 2026': { status:'eingereicht', entries: [
+                { datum:'04.04.2026', firma:'Migros Aare', ort:'3322 Schönbühl', kontakt:'Hr. Lehmann', email:'jobs@migrosaare.ch', tel:'', stelle:'Filialmitarbeiter', rav:true, pensum:'Vollzeit', art:'elektronisch', ergebnis:'Absage', grund:'Erfahrung fehlt' },
+                { datum:'12.04.2026', firma:'Emmi AG', ort:'3052 Zollikofen', kontakt:'', email:'hr@emmi.com', tel:'', stelle:'Produktionsmitarbeiter', rav:false, pensum:'Vollzeit', art:'elektronisch', ergebnis:'Anstellung', grund:'' },
+                { datum:'19.04.2026', firma:'Inselspital', ort:'3010 Bern', kontakt:'Fr. Roth', email:'', tel:'+41 31 632 21 11', stelle:'Transportdienst', rav:true, pensum:'Teilzeit', art:'persönlich', ergebnis:'Absage', grund:'Anderer Kandidat' },
+                { datum:'28.04.2026', firma:'Stellenvermittlung Adecco', ort:'3011 Bern', kontakt:'Hr. Studer', email:'bern@adecco.ch', tel:'', stelle:'Lagerist', rav:false, pensum:'Vollzeit', art:'brieflich', ergebnis:'Absage', grund:'' }
+            ]},
+        'Mai 2026': { status:'offen', entries: [
+                { datum:'05.05.2026', firma:'Migros Aare', ort:'3027 Bern', kontakt:'Fr. Meier', email:'jobs@migrosaare.ch', tel:'+41 58 565 11 11', stelle:'Logistikmitarbeiter', rav:true, pensum:'Vollzeit', art:'elektronisch', ergebnis:'Noch offen', grund:'' },
+                { datum:'14.05.2026', firma:'Coop Bau+Hobby', ort:'3014 Bern', kontakt:'Hr. Fischer', email:'jobs@coop.ch', tel:'', stelle:'Verkaufsmitarbeiter', rav:false, pensum:'Teilzeit', art:'persönlich', ergebnis:'Vorstellungsgespräch', grund:'' }
+            ]}
+    };
+    let bmCur = 'Mai 2026';
+    let bmMode = 'view';
+
+    const bmArten = ['brieflich','elektronisch','persönlich','telefonisch'];
+    const bmErgebnisse = ['Noch offen','Vorstellungsgespräch','Anstellung','Absage'];
+    function bmResCls(e){ return e==='Vorstellungsgespräch'?'gespraech':e==='Anstellung'?'anstellung':e==='Absage'?'absage':'offen'; }
+    function bmEsc(s){ return String(s==null?'':s).replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+    function openBemueh() {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        const a = document.getElementById('antragScreen'); if (a) a.classList.remove('active');
+        document.getElementById('bemuehScreen').classList.add('active');
+        closeOverlays();
+        setBemMode('view');
+    }
+    function closeBemueh() {
+        document.getElementById('bemuehScreen').classList.remove('active');
+        goToView(11);
+    }
+    function bmStepMonth(dir) {
+        const i = bmMonths.indexOf(bmCur);
+        const ni = Math.min(bmMonths.length-1, Math.max(0, i + dir));
+        bmCur = bmMonths[ni];
+        bmRender();
+    }
+    function setBemMode(mode) {
+        bmMode = mode;
+        document.getElementById('bemueh-view').classList.toggle('active', mode === 'view');
+        document.getElementById('bemueh-edit').classList.toggle('active', mode === 'edit');
+        document.getElementById('bm-view').classList.toggle('active', mode === 'view');
+        document.getElementById('bm-edit').classList.toggle('active', mode === 'edit');
+        bmRender();
+    }
+
+    function bmRender() {
+        document.getElementById('bmMonthLabel').textContent = bmCur;
+        const m = bmData[bmCur];
+        const sub = m.status === 'eingereicht' ? 'eingereicht ✓' : 'einzureichen bis ' + bmDeadline[bmCur];
+        document.getElementById('bmMonthSub').textContent = sub;
+        if (bmMode === 'view') bmRenderView(); else bmRenderEdit();
+    }
+
+    function bmCountCard() {
+        const m = bmData[bmCur];
+        const n = m.entries.length;
+        const ok = n >= 4;
+        const statusTxt = m.status === 'eingereicht'
+            ? 'Eingereicht bei Unia Bern'
+            : (ok ? 'Genug Bewerbungen – bereit zum Einreichen' : `Noch ${4-n} bis zum Minimum (4 pro Monat)`);
+        return `<div class="bm-count"><div class="num">${n}</div><div class="ct"><div class="t">Bewerbungen im ${bmCur}</div><div class="s">${statusTxt}</div></div>${ok||m.status==='eingereicht'?'<i class="ti ti-circle-check" style="color:#3B6D11;font-size:22px;"></i>':'<i class="ti ti-alert-circle" style="color:#BA7517;font-size:22px;"></i>'}</div>`;
+    }
+
+    function bmRenderView() {
+        const m = bmData[bmCur];
+        let html = bmCountCard();
+        html += `<div class="vgroup-label">Erfasste Bewerbungen</div>`;
+        m.entries.forEach((e, i) => {
+            const grund = (e.ergebnis==='Absage' && e.grund) ? `<div class="vsr"><span class="lbl">Absagegrund</span><span class="val">${bmEsc(e.grund)}</span></div>` : '';
+            html += `<div class="vsec">
+        <div class="vsh" onclick="toggleVSec(this)">
+          <div class="vsd done"><i class="ti ti-briefcase"></i></div>
+          <div class="vst">${bmEsc(e.firma)}</div>
+          <span class="res-pill ${bmResCls(e.ergebnis)}" style="margin-top:0;"><span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block;"></span>${e.ergebnis}</span>
+          <i class="ti ti-chevron-right chev2" style="color:#888780;"></i>
+        </div>
+        <div class="vsb" style="display:none">
+          <div class="vsr"><span class="lbl">Stelle</span><span class="val">${bmEsc(e.stelle)}</span></div>
+          <div class="vsr"><span class="lbl">Datum</span><span class="val">${bmEsc(e.datum)}</span></div>
+          <div class="vsr"><span class="lbl">Ort</span><span class="val">${bmEsc(e.ort)}</span></div>
+          <div class="vsr"><span class="lbl">Pensum</span><span class="val">${e.pensum}</span></div>
+          <div class="vsr"><span class="lbl">Art der Bewerbung</span><span class="val">${bmEsc(e.art)}</span></div>
+          <div class="vsr"><span class="lbl">Vom RAV zugewiesen</span><span class="val">${e.rav?'Ja':'Nein'}</span></div>
+          ${grund}
+        </div>
+      </div>`;
+        });
+        if (m.status !== 'eingereicht') {
+            html += `<div style="background:#FAEEDA;border-radius:12px;padding:12px;margin-top:8px;display:flex;gap:10px;"><i class="ti ti-clock" style="color:#BA7517;font-size:18px;flex-shrink:0;"></i><div style="font-size:12px;color:#633806;line-height:1.5;">Reiche den Nachweis bis zum ${bmDeadline[bmCur]} ein. Wir erinnern dich rechtzeitig.</div></div>
+      <button class="primary-btn" style="width:100%;margin-top:10px;" onclick="bmSubmit()"><i class="ti ti-send"></i> Nachweis einreichen</button>`;
+        }
+        html += `<div style="height:80px;"></div>`;
+        document.getElementById('bmViewContent').innerHTML = html;
+        document.getElementById('bmViewContent').scrollTop = 0;
+    }
+
+    function bmRenderEdit() {
+        const m = bmData[bmCur];
+        let html = `<div style="font-size:12px;color:#888780;margin:4px 0 10px;line-height:1.5;">Erfasse deine Bewerbungen. Jede zählt für den Monatsnachweis (mindestens 4).</div>`;
+        if (m.entries.length === 0) html += `<div style="text-align:center;color:#888780;font-size:13px;padding:20px;">Noch keine Bewerbung erfasst.</div>`;
+        m.entries.forEach((e, i) => {
+            html += `<div class="field-card" style="position:relative;">
+        <i class="ti ti-x rm" onclick="bmRemoveEntry(${i})" style="position:absolute;top:12px;right:12px;color:#A32D2D;cursor:pointer;font-size:16px;"></i>
+        <div class="fc-head"><i class="ti ti-briefcase"></i>Bewerbung ${i+1}</div>
+        <div class="fg"><label class="fl">Firma</label><input class="fi" value="${bmEsc(e.firma)}" oninput="bmSet(${i},'firma',this.value)"></div>
+        <div class="frow3" style="margin-bottom:14px;"><input class="fi" value="${bmEsc(e.datum)}" placeholder="Datum" oninput="bmSet(${i},'datum',this.value)"><input class="fi" value="${bmEsc(e.ort)}" placeholder="PLZ / Ort" oninput="bmSet(${i},'ort',this.value)"></div>
+        <div class="fg"><label class="fl">Stellenbezeichnung</label><input class="fi" value="${bmEsc(e.stelle)}" oninput="bmSet(${i},'stelle',this.value)"></div>
+        <div class="fg"><label class="fl">Kontaktperson / Kontakt</label><input class="fi" value="${bmEsc(e.kontakt||e.email||e.tel)}" oninput="bmSet(${i},'kontakt',this.value)"></div>
+        <div class="fg"><label class="fl">Vom RAV zugewiesen?</label><div class="yn"><div class="opt ${!e.rav?'sel':''}" onclick="bmSet(${i},'rav',false)">Nein</div><div class="opt ${e.rav?'sel':''}" onclick="bmSet(${i},'rav',true)">Ja</div></div></div>
+        <div class="fg"><label class="fl">Pensum</label><div class="yn"><div class="opt ${e.pensum==='Vollzeit'?'sel':''}" onclick="bmSet(${i},'pensum','Vollzeit')">Vollzeit</div><div class="opt ${e.pensum==='Teilzeit'?'sel':''}" onclick="bmSet(${i},'pensum','Teilzeit')">Teilzeit</div></div></div>
+        <div class="fg"><label class="fl">Art der Bewerbung</label><select class="fs" onchange="bmSet(${i},'art',this.value)">${bmArten.map(o=>`<option ${e.art===o?'selected':''}>${o}</option>`).join('')}</select></div>
+        <div class="fg"><label class="fl">Ergebnis</label><select class="fs" onchange="bmSet(${i},'ergebnis',this.value)">${bmErgebnisse.map(o=>`<option ${e.ergebnis===o?'selected':''}>${o}</option>`).join('')}</select></div>
+        ${e.ergebnis==='Absage'?`<div class="fg" style="margin-bottom:0;"><label class="fl">Absagegrund</label><input class="fi" value="${bmEsc(e.grund)}" oninput="bmSet(${i},'grund',this.value)"></div>`:''}
+      </div>`;
+        });
+        html += `<button class="add-btn" onclick="bmAddEntry()"><i class="ti ti-plus"></i> Weitere Bewerbung hinzufügen</button><div style="height:80px;"></div>`;
+        document.getElementById('bmEditContent').innerHTML = html;
+    }
+
+    function bmSet(i, key, val) {
+        bmData[bmCur].entries[i][key] = val;
+        if (key === 'rav' || key === 'pensum' || key === 'ergebnis') bmRenderEdit();
+    }
+    function bmAddEntry() {
+        if (bmMode !== 'edit') setBemMode('edit');
+        bmData[bmCur].entries.push({ datum:'', firma:'', ort:'', kontakt:'', email:'', tel:'', stelle:'', rav:false, pensum:'Vollzeit', art:'elektronisch', ergebnis:'Noch offen', grund:'' });
+        bmRenderEdit();
+        document.getElementById('bmEditContent').scrollTop = document.getElementById('bmEditContent').scrollHeight;
+    }
+    function bmRemoveEntry(i) { bmData[bmCur].entries.splice(i,1); bmRenderEdit(); }
+    function bmSubmit() {
+        bmData[bmCur].status = 'eingereicht';
+        showToastV('Nachweis ' + bmCur + ' eingereicht');
+        setBemMode('view');
+    }
+
+    // ===== AVP – Angaben der versicherten Person (pro Monat) =====
+    const avpMonths = ['März 2026','April 2026','Mai 2026'];
+    const avpDeadline = { 'März 2026':'30. April', 'April 2026':'31. Mai', 'Mai 2026':'30. Juni' };
+    const avpSections = [
+        { label:'Beschäftigung', questions:[
+                { key:'gearbeitet', q:'Hast du diesen Monat bei einem oder mehreren Arbeitgebern gearbeitet?' },
+                { key:'selbstaendig', q:'Hast du eine selbständige Tätigkeit ausgeübt?' },
+                { key:'massnahme', q:'Hast du an einer arbeitsmarktlichen Massnahme teilgenommen?', hint:'z.B. Kurs, Beschäftigungsprogramm, Praktikum' }
+            ]},
+        { label:'Arbeitsunfähigkeit', questions:[
+                { key:'krank', q:'Warst du krank oder verunfallt (arbeitsunfähig)?', hint:'Bei Ja: Arztzeugnis als Anhang beilegen.' }
+            ]},
+        { label:'Abwesenheiten', questions:[
+                { key:'abwesend', q:'Warst du im Ausland oder ortsabwesend?' }
+            ]},
+        { label:'Weitere Angaben', questions:[
+                { key:'weitere', q:'Gibt es weitere Änderungen zu melden?', hint:'z.B. neue Adresse, Zwischenverdienst, Familienzulagen' }
+            ]}
+    ];
+    const avpData = {
+        'März 2026': { status:'eingereicht', a:{ gearbeitet:'nein', selbstaendig:'nein', massnahme:'ja', krank:'nein', abwesend:'nein', weitere:'nein' } },
+        'April 2026': { status:'eingereicht', a:{ gearbeitet:'ja', selbstaendig:'nein', massnahme:'nein', krank:'nein', abwesend:'nein', weitere:'nein' } },
+        'Mai 2026': { status:'offen', a:{ gearbeitet:'nein', selbstaendig:'nein', massnahme:'nein', krank:'nein', abwesend:'nein', weitere:'nein' } }
+    };
+    let avpCur = 'Mai 2026';
+    let avpMode = 'view';
+
+    function openAVP() {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        ['antragScreen','bemuehScreen'].forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('active'); });
+        document.getElementById('avpScreen').classList.add('active');
+        closeOverlays();
+        setAvpMode('view');
+    }
+    function closeAVP() {
+        document.getElementById('avpScreen').classList.remove('active');
+        goToView(11);
+    }
+    function avpStepMonth(dir) {
+        const i = avpMonths.indexOf(avpCur);
+        avpCur = avpMonths[Math.min(avpMonths.length-1, Math.max(0, i + dir))];
+        avpRender();
+    }
+    function setAvpMode(mode) {
+        avpMode = mode;
+        document.getElementById('avp-view').classList.toggle('active', mode === 'view');
+        document.getElementById('avp-edit').classList.toggle('active', mode === 'edit');
+        document.getElementById('avpTabView').classList.toggle('active', mode === 'view');
+        document.getElementById('avpTabEdit').classList.toggle('active', mode === 'edit');
+        avpRender();
+    }
+
+    function avpRender() {
+        document.getElementById('avpMonthLabel').textContent = avpCur;
+        const m = avpData[avpCur];
+        document.getElementById('avpMonthSub').textContent = m.status === 'eingereicht' ? 'übermittelt ✓' : 'einzureichen bis ' + avpDeadline[avpCur];
+        if (avpMode === 'view') avpRenderView(); else avpRenderEdit();
+    }
+
+    function avpStatusPanel() {
+        const m = avpData[avpCur];
+        const sent = m.status === 'eingereicht';
+        const row = (icon, color, bg, txt) => `<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:${bg};border-radius:8px;margin-bottom:6px;"><i class="ti ${icon}" style="color:${color};font-size:16px;"></i><span style="font-size:12px;color:${color};">${txt}</span></div>`;
+        let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">`;
+        html += `<div><div style="font-size:11px;color:#888780;margin-bottom:6px;">Bearbeitungsstatus</div>${row('ti-circle-check','#3B6D11','#EAF3DE','Formular: vollständig')}${row('ti-circle-check','#3B6D11','#EAF3DE','Anhänge: ok')}</div>`;
+        if (sent) html += `<div><div style="font-size:11px;color:#888780;margin-bottom:6px;">Übermittlungsstatus</div>${row('ti-circle-check','#3B6D11','#EAF3DE','Formular: übermittelt')}${row('ti-circle-check','#3B6D11','#EAF3DE','Anhänge: übermittelt')}</div>`;
+        else html += `<div><div style="font-size:11px;color:#888780;margin-bottom:6px;">Übermittlungsstatus</div>${row('ti-alert-circle','#BA7517','#FAEEDA','Formular: offen')}${row('ti-alert-circle','#BA7517','#FAEEDA','Anhänge: offen')}</div>`;
+        html += `</div>`;
+        return html;
+    }
+
+    function avpRenderView() {
+        let html = avpStatusPanel();
+        avpSections.forEach(s => {
+            const rows = s.questions.map(qq => {
+                const v = avpData[avpCur].a[qq.key];
+                return `<div class="vsr"><span class="lbl">${qq.q}</span><span class="val" style="color:${v==='ja'?'#185FA5':'#5F5E5A'};">${v==='ja'?'Ja':'Nein'}</span></div>`;
+            }).join('');
+            const anyJa = s.questions.some(qq => avpData[avpCur].a[qq.key]==='ja');
+            html += `<div class="vsec">
+        <div class="vsh" onclick="toggleVSec(this)">
+          <div class="vsd ${anyJa?'warning':'done'}"><i class="ti ti-${anyJa?'alert-circle':'check'}"></i></div>
+          <div class="vst">${s.label}</div>
+          <button class="vedit" onclick="event.stopPropagation(); setAvpMode('edit')" title="Bearbeiten"><i class="ti ti-pencil"></i></button>
+          <i class="ti ti-chevron-right chev2" style="color:#888780;"></i>
+        </div>
+        <div class="vsb" style="display:none">${rows}</div>
+      </div>`;
+        });
+        const m = avpData[avpCur];
+        if (m.status !== 'eingereicht') {
+            html += `<div style="background:#FAEEDA;border-radius:12px;padding:12px;margin-top:8px;display:flex;gap:10px;"><i class="ti ti-clock" style="color:#BA7517;font-size:18px;flex-shrink:0;"></i><div style="font-size:12px;color:#633806;line-height:1.5;">Du kannst ab dem 22. ${avpCur.split(' ')[0]} übermitteln, spätestens bis ${avpDeadline[avpCur]}.</div></div>
+      <button class="primary-btn" style="width:100%;margin-top:10px;" onclick="avpSubmit()"><i class="ti ti-send"></i> AVP übermitteln</button>`;
+        }
+        html += `<div style="height:80px;"></div>`;
+        document.getElementById('avpViewContent').innerHTML = html;
+        document.getElementById('avpViewContent').scrollTop = 0;
+    }
+
+    function avpRenderEdit() {
+        let html = `<div style="font-size:12px;color:#888780;margin:4px 0 12px;line-height:1.5;">Beantworte alle Fragen für ${avpCur}. Die meisten Antworten sind „Nein" – ändere nur, was zutrifft.</div>`;
+        const icons = { 'Beschäftigung':'ti-briefcase', 'Arbeitsunfähigkeit':'ti-bandage', 'Abwesenheiten':'ti-plane', 'Weitere Angaben':'ti-dots' };
+        avpSections.forEach(s => {
+            let inner = '';
+            s.questions.forEach(qq => {
+                const v = avpData[avpCur].a[qq.key];
+                inner += `<div class="fg"><label class="fl">${qq.q}</label><div class="yn"><div class="opt ${v==='nein'?'sel':''}" onclick="avpSet('${qq.key}','nein')">Nein</div><div class="opt ${v==='ja'?'sel':''}" onclick="avpSet('${qq.key}','ja')">Ja</div></div>${qq.hint?`<div class="hint">${qq.hint}</div>`:''}</div>`;
+            });
+            html += `<div class="field-card"><div class="fc-head"><i class="ti ${icons[s.label]||'ti-clipboard'}"></i>${s.label}</div>${inner}</div>`;
+        });
+        html += `<div style="height:80px;"></div>`;
+        document.getElementById('avpEditContent').innerHTML = html;
+    }
+
+    function avpSet(key, val) { avpData[avpCur].a[key] = val; avpRenderEdit(); }
+    function avpSubmit() {
+        avpData[avpCur].status = 'eingereicht';
+        applyAntragStatus();
+        showToastV('AVP ' + avpCur + ' übermittelt – Geld wird ausbezahlt');
+        setAvpMode('view');
+    }
+
+    function aNextSection() {
+        if (aCur < aVisible().length-1) { aCur++; renderAEdit(); }
+        else { showToastV('Antrag wird übermittelt …'); setTimeout(()=>{ antragSubmitted = true; setAntragMode('view'); showToastV('Antrag eingereicht – Status: In Prüfung'); }, 1300); }
+    }
+    function aPrevSection() { if (aCur>0){ aCur--; renderAEdit(); } }
+
+    // Initialer Zustand: leer (keine Daten) – Daten kommen per Dokument-Upload rein
+    clearAntragData();
+    renderAntragAll();
+    applyI18n();
+    // Gespeicherten API-Key ins Inputfeld laden
+    try {
+        const stored = localStorage.getItem('freddy_api_key');
+        if (stored) { const inp = document.getElementById('apiKeyInput'); if (inp) inp.value = stored; }
+    } catch(e) {}
+</script>
+
+</body>
+</html>
