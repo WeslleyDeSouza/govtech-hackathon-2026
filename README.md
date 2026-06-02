@@ -4,6 +4,8 @@
 guides a person through the Swiss unemployment journey - from the first letter from the RAV
 to the first payout.
 
+🔗 **Project page:** https://govtech.digisus-lab.ch/project/36
+
 > [!NOTE]
 > This is an **MVP built for demo purposes only** — a clickable prototype to illustrate the
 > flow and user experience, not a production-ready application.
