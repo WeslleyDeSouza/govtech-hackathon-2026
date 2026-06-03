@@ -8,6 +8,8 @@ to the first payout.
 
 🔗 **Project page:** https://govtech.digisus-lab.ch/project/36
 
+🔗 **Demo Page:** https://weslleydesouza.github.io/govtech-hackathon-2026
+
 ---
 
 > [!NOTE]
