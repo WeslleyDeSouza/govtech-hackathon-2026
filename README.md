@@ -3,7 +3,7 @@
 **Freddy's Companion** is a GovTech Hackathon 2026 prototype: a plain-language companion that
 guides a person through the Swiss unemployment journey - from the first letter from the RAV
 to the first payout.
-
+🔗 **GovTech page:** https://www.bk.admin.ch/de/govtechhackathon26
 🔗 **Project page:** https://govtech.digisus-lab.ch/project/36
 
 > [!NOTE]
@@ -69,34 +69,42 @@ journey
 
 ### Screen flow
 
-`index.html` is a client-side single-page app: every screen is toggled by `goToView()` and
-the `open*()` helpers. There is no router and no server.
+These situations and their paths are designed for the demo. The branching shown here illustrates the intended logic — a production implementation would differ, with real eligibility rules and support routes defined together with the responsible authorities.
 
 ```mermaid
 flowchart TD
   V0["Splash / Welcome"]:::on --> V1["Language select"]:::on
   V1 --> V3["Situation"]:::on
-  V3 --> V12["Choose Arbeitslosenkasse"]:::on
+
+  V3 --> S1["Lost job · already unemployed"]:::opt
+  V3 --> S2["Got notice · still working"]:::opt
+  V3 --> S3["At risk · only a suspicion"]:::opt
+  V3 --> S4["Something else · re-entry / exhausted"]:::opt
+
+  %% full application path (needs a fund)
+  S1 --> V12["Choose Arbeitslosenkasse"]:::on
+  S2 --> V12
   V12 --> V13["RAV verification (AGOV login)"]:::on
-  V13 --> V10["Plan generation (loading)"]:::on
+  V13 --> V10["Plan generation"]:::on
+
+  %% support paths (no fund needed)
+  S3 -. "no application yet" .-> SUP["Support & info · early RAV registration"]:::alt
+  S4 -. "special case" .-> SUP2["Support & referral · e.g. Sozialdienst"]:::alt
+  SUP --> V10
+  SUP2 --> V10
+
   V10 --> V11["Home dashboard"]:::home
 
-  %% alternate help paths
-  V3 -.no RAV yet.-> V5["RAV help path"]:::alt
-  V5 --> V6["AGOV status"]:::alt
-  V6 --> V9["Letter scan & explain"]:::alt
-  V9 --> V10
-
-  %% sub-screens reachable from Home
-  V11 --> A["Antrag (view / edit)"]:::sub
+  V11 --> A["Antrag (view / edit · 10000d)"]:::sub
   V11 --> B["Arbeitsbemühungen"]:::sub
   V11 --> P["AVP-Meldung"]:::sub
   V11 --> E["Emergency / help sheet"]:::sub
   A -. "remind employer" .-> AG["Arbeitgeber-Status"]:::wait
 
   classDef on fill:#EEEDFE,stroke:#534AB7,color:#26215C
-  classDef home fill:#EAF3DE,stroke:#3B6D11,color:#173404
+  classDef opt fill:#F7F6FD,stroke:#9990D8,color:#26215C
   classDef alt fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  classDef home fill:#EAF3DE,stroke:#3B6D11,color:#173404
   classDef sub fill:#ffffff,stroke:#888780,color:#2c2c2a
   classDef wait fill:#FAEEDA,stroke:#BA7517,color:#633806
 ```
