@@ -3,11 +3,12 @@
 **Freddy's Companion** is a GovTech Hackathon 2026 prototype: a plain-language companion that
 guides a person through the Swiss unemployment journey - from the first letter from the RAV
 to the first payout.
+
 🔗 **GovTech page:** https://www.bk.admin.ch/de/govtechhackathon26
 🔗 **Project page:** https://govtech.digisus-lab.ch/project/36
 
 > [!NOTE]
-> This is an **MVP built for demo purposes only** — a clickable prototype to illustrate the
+> This is an **MVP built for demo purposes only** - a clickable prototype to illustrate the
 > flow and user experience, not a production-ready application.
 
 ![Banner](Grafik-Hackathon-2026-blau-weisser-hintergrund.png)
