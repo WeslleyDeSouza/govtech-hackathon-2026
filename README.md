@@ -5,7 +5,10 @@ guides a person through the Swiss unemployment journey - from the first letter f
 to the first payout.
 
 🔗 **GovTech page:** https://www.bk.admin.ch/de/govtechhackathon26
+
 🔗 **Project page:** https://govtech.digisus-lab.ch/project/36
+
+---
 
 > [!NOTE]
 > This is an **MVP built for demo purposes only** - a clickable prototype to illustrate the
